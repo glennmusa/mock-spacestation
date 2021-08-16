@@ -36,13 +36,13 @@ param location string = resourceGroup().location
 param vmSize string = 'Standard_B2s'
 
 @description('Name of the VNET')
-param virtualNetworkName string = 'vNet'
+param virtualNetworkName string = '${vmName}vNet'
 
 @description('Name of the subnet in the virtual network')
-param subnetName string = 'Subnet'
+param subnetName string = '${vmName}Subnet'
 
 @description('Name of the Network Security Group')
-param networkSecurityGroupName string = 'SecGroupNet'
+param networkSecurityGroupName string = '${vmName}SecGroupNet'
 
 var publicIPAddressName = '${vmName}PublicIP'
 var networkInterfaceName = '${vmName}NetInt'
