@@ -1,11 +1,11 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.613.9944",
-      "templateHash": "9212456048632434734"
+      "version": "0.4.451.19169",
+      "templateHash": "4080069392146735430"
     }
   },
   "parameters": {
@@ -30,13 +30,6 @@
       "type": "secureString",
       "metadata": {
         "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
-      }
-    },
-    "resourceGroupName": {
-      "type": "string",
-      "defaultValue": "mockSpacestation",
-      "metadata": {
-        "description": "The name for the Mock Spacestation resource group"
       }
     },
     "groundstationVmName": {
@@ -71,16 +64,9 @@
   "functions": [],
   "resources": [
     {
-      "type": "Microsoft.Resources/resourceGroups",
-      "apiVersion": "2021-01-01",
-      "name": "[parameters('resourceGroupName')]",
-      "location": "[parameters('groundstationLocation')]"
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-10-01",
       "name": "mockGroundstationVm",
-      "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -109,8 +95,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.613.9944",
-              "templateHash": "12984973397551558967"
+              "version": "0.4.451.19169",
+              "templateHash": "8585928361722206850"
             }
           },
           "parameters": {
@@ -373,16 +359,12 @@
             }
           }
         }
-      },
-      "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
-      ]
+      }
     },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2019-10-01",
       "name": "mockSpacestationVm",
-      "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -411,8 +393,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.613.9944",
-              "templateHash": "12984973397551558967"
+              "version": "0.4.451.19169",
+              "templateHash": "8585928361722206850"
             }
           },
           "parameters": {
@@ -675,10 +657,7 @@
             }
           }
         }
-      },
-      "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
-      ]
+      }
     }
   ]
 }

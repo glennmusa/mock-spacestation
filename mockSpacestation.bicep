@@ -1,5 +1,3 @@
-targetScope = 'subscription'
-
 //////////
 // PARAMS
 //////////
@@ -17,10 +15,6 @@ param authenticationType string = 'password'
 @secure()
 param adminPasswordOrKey string
 
-// Resource Group Parameters
-@description('The name for the Mock Spacestation resource group')
-param resourceGroupName string = 'mockSpacestation'
-
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')
 param groundstationVmName string = 'mockGroundstation'
@@ -37,15 +31,8 @@ param spacestationVmName string = 'mockSpacestation'
 // MAIN
 //////////
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-01-01' = {
-  name: resourceGroupName
-  location: groundstationLocation
-}
-
 module groundstation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockGroundstationVm'
-  scope: az.resourceGroup(resourceGroup.name)
-
   params: {
     adminPasswordOrKey: adminPasswordOrKey
     adminUsername: adminUsername
@@ -57,8 +44,6 @@ module groundstation 'modules/linuxVirtualMachine.bicep' = {
 
 module spacestation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockSpacestationVm'
-  scope: az.resourceGroup(resourceGroup.name)
-
   params: {
     adminPasswordOrKey: adminPasswordOrKey
     adminUsername: adminUsername
