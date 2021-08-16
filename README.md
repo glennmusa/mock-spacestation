@@ -13,8 +13,14 @@ This will use the Azure Custom Template Deployment UI to deploy the Mock Spacest
 If you're comfortable with CLI tools, the Azure CLI provides the `deployment` command to deploy the Mock Spacestation and Mock Groundstation to a subscription:
 
 ```plaintext
-az deployment sub create \
-  --location "eastus" \
-  --name "MockSpacestation" \
+# resourceGroupName="myMockSpacestation"
+#
+# az group create \
+#   --location eastus \
+#   --name $resourceGroupName
+
+az deployment group create \
+  --resource-group $resourceGroupName \
+  --name "MockSpacestationDeployment" \
   --template-file ./mockSpacestation.json
 ```
