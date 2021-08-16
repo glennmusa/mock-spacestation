@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "15306610606676644136"
+      "templateHash": "11930576659460133008"
     }
   },
   "parameters": {
@@ -34,7 +34,7 @@
       "type": "string",
       "defaultValue": "australiaeast",
       "metadata": {
-        "description": "The region to deploy Mock Groundstation resources into"
+        "description": "The region to deploy Mock Spacestation resources into"
       }
     },
     "spacestationVmName": {

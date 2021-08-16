@@ -15,7 +15,7 @@ param groundstationVmName string = 'mockGroundstation'
 param groundstationLocation string = 'eastus'
 
 // Spacestation Parameters
-@description('The region to deploy Mock Groundstation resources into')
+@description('The region to deploy Mock Spacestation resources into')
 param spacestationLocation string = 'australiaeast'
 @description('The name of the Mock Spacestation Virtual Machine')
 param spacestationVmName string = 'mockSpacestation'
