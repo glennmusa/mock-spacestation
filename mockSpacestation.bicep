@@ -6,7 +6,7 @@ targetScope = 'subscription'
 
 // Resource Group Parameters
 @description('The name for the Mock Spacestation resource group')
-param resourceGroupName string = 'mockSpacestationRG'
+param resourceGroupName string = 'mockSpacestation'
 
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')

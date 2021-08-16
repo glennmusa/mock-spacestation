@@ -5,13 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "11930576659460133008"
+      "templateHash": "8198434604538906636"
     }
   },
   "parameters": {
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "mockSpacestationRG",
+      "defaultValue": "mockSpacestation",
       "metadata": {
         "description": "The name for the Mock Spacestation resource group"
       }
@@ -110,7 +110,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "18388553939444310812"
+              "templateHash": "12984973397551558967"
             }
           },
           "parameters": {
@@ -180,21 +180,21 @@
             },
             "virtualNetworkName": {
               "type": "string",
-              "defaultValue": "vNet",
+              "defaultValue": "[format('{0}vNet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the VNET"
               }
             },
             "subnetName": {
               "type": "string",
-              "defaultValue": "Subnet",
+              "defaultValue": "[format('{0}Subnet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the subnet in the virtual network"
               }
             },
             "networkSecurityGroupName": {
               "type": "string",
-              "defaultValue": "SecGroupNet",
+              "defaultValue": "[format('{0}SecGroupNet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the Network Security Group"
               }
@@ -412,7 +412,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "18388553939444310812"
+              "templateHash": "12984973397551558967"
             }
           },
           "parameters": {
@@ -482,21 +482,21 @@
             },
             "virtualNetworkName": {
               "type": "string",
-              "defaultValue": "vNet",
+              "defaultValue": "[format('{0}vNet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the VNET"
               }
             },
             "subnetName": {
               "type": "string",
-              "defaultValue": "Subnet",
+              "defaultValue": "[format('{0}Subnet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the subnet in the virtual network"
               }
             },
             "networkSecurityGroupName": {
               "type": "string",
-              "defaultValue": "SecGroupNet",
+              "defaultValue": "[format('{0}SecGroupNet', parameters('vmName'))]",
               "metadata": {
                 "description": "Name of the Network Security Group"
               }
