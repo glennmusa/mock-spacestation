@@ -4,6 +4,19 @@ targetScope = 'subscription'
 // PARAMS
 //////////
 
+// Administrator Parameters
+@description('Username for the Virtual Machine.')
+param adminUsername string
+@description('Type of authentication to use on the Virtual Machine. SSH key is recommended.')
+@allowed([
+  'sshPublicKey'
+  'password'
+])
+param authenticationType string = 'password'
+@description('SSH Key or password for the Virtual Machine. SSH key is recommended.')
+@secure()
+param adminPasswordOrKey string
+
 // Resource Group Parameters
 @description('The name for the Mock Spacestation resource group')
 param resourceGroupName string = 'mockSpacestation'
@@ -19,19 +32,6 @@ param groundstationLocation string = 'eastus'
 param spacestationLocation string = 'australiaeast'
 @description('The name of the Mock Spacestation Virtual Machine')
 param spacestationVmName string = 'mockSpacestation'
-
-// Administrator Parameters
-@description('Username for the Virtual Machine.')
-param adminUsername string
-@description('Type of authentication to use on the Virtual Machine. SSH key is recommended.')
-@allowed([
-  'sshPublicKey'
-  'password'
-])
-param authenticationType string = 'password'
-@description('SSH Key or password for the Virtual Machine. SSH key is recommended.')
-@secure()
-param adminPasswordOrKey string
 
 //////////
 // MAIN
