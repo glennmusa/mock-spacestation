@@ -1,13 +1,15 @@
 // largely inspired by
 // https://github.com/Azure/azure-quickstart-templates/tree/master/quickstarts/microsoft.resources/deployment-script-ssh-key-gen
 
+@description('The location to host the deployment script that creates the SSH keys')
 param location string = resourceGroup().location
 
+@description('The KeyVault in which to create the secrets containing the SSH keys')
 param keyvaultName string
-param publicKeySecretName string = 'sshPublicKey'
-param privateKeySecretName string = 'sshPrivateKey'
 
-param sshKeyGenScriptName string = 'sshKeyGenScript'
+var publicKeySecretName = 'sshPublicKey'
+var privateKeySecretName = 'sshPrivateKey'
+var sshKeyGenScriptName = 'sshKeyGenScript'
 var sshKeyGenScript = '''
 echo -e \'y\' | ssh-keygen -f scratch -N "" &&
 privateKey=$(cat scratch) &&
