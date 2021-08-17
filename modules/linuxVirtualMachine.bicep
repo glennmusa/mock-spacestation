@@ -1,21 +1,15 @@
+// largely inspired by
 // https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.compute/vm-simple-linux/main.bicep
 
 @description('The name of your Virtual Machine.')
 param vmName string = 'simpleLinuxVM'
 
-@description('Username for the Virtual Machine.')
-param adminUsername string
+@description('The administrator username of your Virtual Machine.')
+param adminUsername string = 'azureuser'
 
-@description('Type of authentication to use on the Virtual Machine. SSH key is recommended.')
-@allowed([
-  'sshPublicKey'
-  'password'
-])
-param authenticationType string = 'password'
-
-@description('SSH Key or password for the Virtual Machine. SSH key is recommended.')
+@description('SSH key for the Virtual Machine.')
 @secure()
-param adminPasswordOrKey string
+param sshPublicKey string
 
 @description('Unique DNS Name for the Public IP used to access the Virtual Machine.')
 param dnsLabelPrefix string = toLower('${vmName}-${uniqueString(resourceGroup().id)}')
@@ -55,7 +49,7 @@ var linuxConfiguration = {
     publicKeys: [
       {
         path: '/home/${adminUsername}/.ssh/authorized_keys'
-        keyData: adminPasswordOrKey
+        keyData: sshPublicKey
       }
     ]
   }
@@ -176,12 +170,12 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
     osProfile: {
       computerName: vmName
       adminUsername: adminUsername
-      adminPassword: adminPasswordOrKey
-      linuxConfiguration: ((authenticationType == 'password') ? null : linuxConfiguration)
+      adminPassword: sshPublicKey
+      linuxConfiguration: linuxConfiguration
     }
   }
 }
 
 output adminUsername string = adminUsername
-output hostname string = publicIP.properties.dnsSettings.fqdn
+output hostName string = publicIP.properties.dnsSettings.fqdn
 output sshCommand string = 'ssh ${adminUsername}@${publicIP.properties.dnsSettings.fqdn}'

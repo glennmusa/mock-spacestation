@@ -13,14 +13,22 @@ This will use the Azure Custom Template Deployment UI to deploy the Mock Spacest
 If you're comfortable with CLI tools, the Azure CLI provides the `deployment` command to deploy the Mock Spacestation and Mock Groundstation to a subscription:
 
 ```plaintext
-# resourceGroupName="myMockSpacestation"
-#
-# az group create \
-#   --location eastus \
-#   --name $resourceGroupName
+resourceGroupName="myMockSpacestation"
+deploymentName="mockSpaceStationDeploy"
+az group create \
+  --location eastus \
+  --name $resourceGroupName
 
 az deployment group create \
   --resource-group $resourceGroupName \
-  --name "MockSpacestationDeployment" \
+  --name $deploymentName \
   --template-file ./mockSpacestation.json
+```
+
+## Accessing VMs
+
+After you've deployed, take note of your Deployment Name (link to how to get this from the portal) and run [scripts/getSshCommands.sh](scripts/getSshCommands.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs:
+
+```plaintext
+scripts/getSshCommands.sh $resourceGroupName $deploymentName
 ```
