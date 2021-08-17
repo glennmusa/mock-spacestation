@@ -3,17 +3,7 @@
 //////////
 
 // Administrator Parameters
-@description('Username for the Virtual Machine.')
-param adminUsername string
-@description('Type of authentication to use on the Virtual Machine. SSH key is recommended.')
-@allowed([
-  'sshPublicKey'
-  'password'
-])
-param authenticationType string = 'password'
-@description('SSH Key or password for the Virtual Machine. SSH key is recommended.')
-@secure()
-param adminPasswordOrKey string
+var adminUsername = 'azureuser'
 
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')
@@ -27,16 +17,45 @@ param spacestationLocation string = 'australiaeast'
 @description('The name of the Mock Spacestation Virtual Machine')
 param spacestationVmName string = 'mockSpacestation'
 
+// SSH Key Parameters
+var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
+var keyvaultTenantId = subscription().tenantId
+
 //////////
 // MAIN
 //////////
 
+resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+  name: keyvaultName
+  location: resourceGroup().location
+  properties: {
+    enabledForDeployment: true
+    enabledForTemplateDeployment: true
+    enableRbacAuthorization: true
+    networkAcls: {
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
+    }
+    sku: {
+      name: 'standard'
+      family: 'A'
+    }
+    tenantId: keyvaultTenantId
+  }
+}
+
+module sshKey 'modules/sshKey.bicep' = {
+  name: 'sshKey'
+  params: {
+    keyvaultName: keyvault.name
+  }
+}
+
 module groundstation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockGroundstationVm'
   params: {
-    adminPasswordOrKey: adminPasswordOrKey
     adminUsername: adminUsername
-    authenticationType: authenticationType
+    sshPublicKey: sshKey.outputs.publicKey
     location: groundstationLocation
     vmName: groundstationVmName
   }
@@ -45,10 +64,19 @@ module groundstation 'modules/linuxVirtualMachine.bicep' = {
 module spacestation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockSpacestationVm'
   params: {
-    adminPasswordOrKey: adminPasswordOrKey
     adminUsername: adminUsername
-    authenticationType: authenticationType
+    sshPublicKey: sshKey.outputs.publicKey
     location: spacestationLocation
     vmName: spacestationVmName
   }
 }
+
+output keyvaultResourceId string = keyvault.id
+output keyvaultName string = keyvault.name
+output privateKeySecretName string = sshKey.outputs.privateKeySecretName
+
+output groundstationAdminUsername string = adminUsername
+output groundstationHostName string = groundstation.outputs.hostName
+
+output spacestationAdminUsername string = adminUsername
+output spacestationHostName string = spacestation.outputs.hostName
