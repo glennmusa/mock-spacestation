@@ -48,4 +48,4 @@ resource privateKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
 }
 
 output publicKey string = sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
-output privateKeySecretName string = privateKeySecret.name
+output privateKeySecretName string = privateKeySecretName

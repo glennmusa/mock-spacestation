@@ -38,9 +38,8 @@ fi
 resourceGroupName="$1"
 deploymentName="$2"
 
-keyvaultRole="Key Vault Administrator"
 privateKeyFileName="mockSpacestationPrivateKey"
-userAccount=$(az account show --query user.name --output tsv)
+userObjectId=$(az ad signed-in-user show --query objectId --output tsv)
 
 # get deployment output
 info_log "Querying outputs from deployment $deploymentName into resource group $resourceGroupName"
@@ -52,7 +51,6 @@ outputs=($(az deployment group show \
       properties.outputs.groundstationAdminUsername.value, \
       properties.outputs.groundstationHostName.value, \
       properties.outputs.keyvaultName.value, \
-      properties.outputs.keyvaultResourceId.value, \
       properties.outputs.privateKeySecretName.value, \
       properties.outputs.spacestationAdminUsername.value, \
       properties.outputs.spacestationHostName.value \
@@ -63,32 +61,24 @@ outputs=($(az deployment group show \
 groundstationAdminUsername=${outputs[0]}
 groundstationHostName=${outputs[1]}
 keyvaultName=${outputs[2]}
-keyvaultResourceId=${outputs[3]}
-privateKeySecretName=${outputs[4]}
-spacestationAdminUsername=${outputs[5]}
-spacestationHostName=${outputs[6]}
-
-# add the user to the KeyVault Administrator role
-info_log "Adding $keyvaultRole for current user $userAccount"
-az role assignment create \
-  --role "$keyvaultRole" \
-  --assignee "$userAccount" \
-  --scope "$keyvaultResourceId" \
-  --only-show-errors \
-  --output none
+privateKeySecretName=${outputs[3]}
+spacestationAdminUsername=${outputs[4]}
+spacestationHostName=${outputs[5]}
 
 # add the secret permissions for the user
-# info_log "Adding secret policies for current user $userAccount"
-# az keyvault set-policy \
-#   --name "$keyvaultName" \
-#   --secret-permissions "get list set delete backup restore recover purge" \
-#   --object-id "$userAccount"
+info_log "Adding secret policies for current user $userObjectId"
+az keyvault set-policy \
+  --name "$keyvaultName" \
+  --secret-permissions get list \
+  --object-id "$userObjectId"
 
 # write the private key to the specified file
 info_log "Writing $privateKeySecretName to file $privateKeyFileName"
+rm -f "$privateKeyFileName"
 az keyvault secret show \
   --vault-name "$keyvaultName" \
   --name "$privateKeySecretName" \
+  --query "value" \
   --output tsv >> "$privateKeyFileName"
 
 # set the perms on the private key

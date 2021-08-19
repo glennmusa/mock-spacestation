@@ -1,9 +1,17 @@
 //////////
-// PARAMS
+// CONSTS
 //////////
 
 // Administrator Parameters
 var adminUsername = 'azureuser'
+
+// SSH Key Parameters
+var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
+var keyvaultTenantId = subscription().tenantId
+
+//////////
+// PARAMS
+//////////
 
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')
@@ -17,10 +25,6 @@ param spacestationLocation string = 'australiaeast'
 @description('The name of the Mock Spacestation Virtual Machine')
 param spacestationVmName string = 'mockSpacestation'
 
-// SSH Key Parameters
-var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
-var keyvaultTenantId = subscription().tenantId
-
 //////////
 // MAIN
 //////////
@@ -31,7 +35,6 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
   properties: {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
-    enableRbacAuthorization: true
     networkAcls: {
       defaultAction: 'Allow'
       bypass: 'AzureServices'
@@ -41,6 +44,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
       family: 'A'
     }
     tenantId: keyvaultTenantId
+    accessPolicies: []
   }
 }
 
@@ -71,7 +75,10 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
   }
 }
 
-output keyvaultResourceId string = keyvault.id
+//////////
+// OUTPUT
+//////////
+
 output keyvaultName string = keyvault.name
 output privateKeySecretName string = sshKey.outputs.privateKeySecretName
 
