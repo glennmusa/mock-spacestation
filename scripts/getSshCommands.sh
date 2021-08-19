@@ -40,7 +40,9 @@ deploymentName="$2"
 
 keyvaultRole="Key Vault Administrator"
 privateKeyFileName="mockSpacestationPrivateKey"
-userAccount=$(az account show --query user.name --output tsv)
+userAccount=$(az ad signed-in-user show --query '[userPrincipalName]' -o tsv)
+# removing trailing character
+userAccount=$(echo $userAccount | sed 's/.$//')
 
 # get deployment output
 info_log "Querying outputs from deployment $deploymentName into resource group $resourceGroupName"
@@ -64,25 +66,19 @@ groundstationAdminUsername=${outputs[0]}
 groundstationHostName=${outputs[1]}
 keyvaultName=${outputs[2]}
 keyvaultResourceId=${outputs[3]}
+# removing carriage return
+keyvaultResourceId=$(echo $keyvaultResourceId | sed 's/.$//')
 privateKeySecretName=${outputs[4]}
 spacestationAdminUsername=${outputs[5]}
 spacestationHostName=${outputs[6]}
 
 # add the user to the KeyVault Administrator role
-info_log "Adding $keyvaultRole for current user $userAccount"
-az role assignment create \
-  --role "$keyvaultRole" \
-  --assignee "$userAccount" \
-  --scope "$keyvaultResourceId" \
-  --only-show-errors \
-  --output none
+# info_log "Adding $keyvaultRole for current user $userAccount"
 
-# add the secret permissions for the user
-# info_log "Adding secret policies for current user $userAccount"
-# az keyvault set-policy \
-#   --name "$keyvaultName" \
-#   --secret-permissions "get list set delete backup restore recover purge" \
-#   --object-id "$userAccount"
+az role assignment create \
+  --assignee $userAccount \
+  --role "Key Vault Administrator" \
+  --scope $keyvaultResourceId
 
 # write the private key to the specified file
 info_log "Writing $privateKeySecretName to file $privateKeyFileName"

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.451.19169",
-      "templateHash": "5330333637957033402"
+      "version": "0.4.613.9944",
+      "templateHash": "2571482893656664344"
     }
   },
   "parameters": {
@@ -85,8 +85,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.451.19169",
-              "templateHash": "12941320670909116395"
+              "version": "0.4.613.9944",
+              "templateHash": "4778199918038842802"
             }
           },
           "parameters": {
@@ -112,7 +112,7 @@
           },
           "functions": [],
           "variables": {
-            "sshKeyGenScript": "echo -e \\'y\\' | ssh-keygen -f scratch -N \"\" &&\nprivateKey=$(cat scratch) &&\npublicKey=$(cat scratch.pub) &&\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\" &&\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\"\n"
+            "sshKeyGenScript": "#!/bin/bash\n\necho -e \\'y\\' | ssh-keygen -f scratch -N \"\" &&\nprivateKey=$(cat scratch) &&\npublicKey=$(cat scratch.pub) &&\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\" &&\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\"\n"
           },
           "resources": [
             {
@@ -159,7 +159,7 @@
             },
             "privateKeySecretName": {
               "type": "string",
-              "value": "[format('{0}/{1}', parameters('keyvaultName'), parameters('privateKeySecretName'))]"
+              "value": "[parameters('privateKeySecretName')]"
             }
           }
         }
@@ -197,8 +197,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.451.19169",
-              "templateHash": "3766214066570027043"
+              "version": "0.4.613.9944",
+              "templateHash": "14656231286454718324"
             }
           },
           "parameters": {
@@ -485,8 +485,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.451.19169",
-              "templateHash": "3766214066570027043"
+              "version": "0.4.613.9944",
+              "templateHash": "14656231286454718324"
             }
           },
           "parameters": {

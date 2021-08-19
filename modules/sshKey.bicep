@@ -8,13 +8,17 @@ param publicKeySecretName string = 'sshPublicKey'
 param privateKeySecretName string = 'sshPrivateKey'
 
 param sshKeyGenScriptName string = 'sshKeyGenScript'
-var sshKeyGenScript = '''
+
+var sshKeyGenScript = loadTextContent('./sshKeyGen.sh')
+
+/*var sshKeyGenScript = '''
 echo -e \'y\' | ssh-keygen -f scratch -N "" &&
 privateKey=$(cat scratch) &&
 publicKey=$(cat scratch.pub) &&
 json="{\"keyinfo\":{\"privateKey\":\"$privateKey\",\"publicKey\":\"$publicKey\"}}" &&
 echo "$json" > "$AZ_SCRIPTS_OUTPUT_PATH"
 '''
+*/
 
 resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' existing = {
   name: keyvaultName
@@ -34,14 +38,16 @@ resource sshKeyGenerationScript 'Microsoft.Resources/deploymentScripts@2020-10-0
 }
 
 resource publicKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: '${keyvault.name}/${publicKeySecretName}'
+  parent: keyvault
+  name: publicKeySecretName
   properties: {
     value: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
   }
 }
 
 resource privateKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: '${keyvault.name}/${privateKeySecretName}'
+  parent: keyvault
+  name: privateKeySecretName
   properties: {
     value: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
   }
