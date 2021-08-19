@@ -70,7 +70,9 @@ info_log "Adding secret policies for current user $userObjectId"
 az keyvault set-policy \
   --name "$keyvaultName" \
   --secret-permissions get list \
-  --object-id "$userObjectId"
+  --object-id "$userObjectId" \
+  --only-show-errors \
+  --output "none"
 
 # write the private key to the specified file
 info_log "Writing $privateKeySecretName to file $privateKeyFileName"
