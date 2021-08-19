@@ -5,8 +5,6 @@
 // CONSTS
 //////////
 
-var publicKeySecretName = 'sshPublicKey'
-var privateKeySecretName = 'sshPrivateKey'
 var sshKeyGenScriptName = 'sshKeyGenScript'
 var sshKeyGenScript = '''
 echo -e \'y\' | ssh-keygen -f scratch -N "" &&
@@ -25,6 +23,12 @@ param location string = resourceGroup().location
 
 @description('The KeyVault in which to create the secrets containing the SSH keys')
 param keyvaultName string
+
+@description('The name of the secret in KeyVault to store the SSH public key')
+param publicKeySecretName string
+
+@description('The name of the secret in KeyVault to store the SSH private key')
+param privateKeySecretName string
 
 //////////
 // MAIN

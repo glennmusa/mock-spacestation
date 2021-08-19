@@ -1,62 +1,53 @@
 // largely inspired by
-// https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.compute/vm-simple-linux/main.bicep
+// https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.compute/virtualMachine-simple-linux/main.bicep
 
-@description('The name of your Virtual Machine.')
-param vmName string = 'simpleLinuxVM'
+//////////
+// CONSTS
+//////////
 
-@description('The administrator username of your Virtual Machine.')
+var dnsLabelPrefix = toLower('${virtualMachineName}-${uniqueString(resourceGroup().id)}')
+var virtualNetworkName = '${virtualMachineName}VirtualNetwork'
+var virtualNetworkAddressPrefix = '10.1.0.0/16'
+var subnetName = '${virtualMachineName}Subnet'
+var subnetAddressPrefix = '10.1.0.0/24'
+
+var networkSecurityGroupName = '${virtualMachineName}NetworkSecurityGroup'
+
+var virtualMachineNetworkInterfaceName = '${virtualMachineName}NetworkInterface'
+var virtualMachinePublicIPAddressName = '${virtualMachineName}publicIPAddress'
+
+//////////
+// PARAMS
+//////////
+
+@description('The location to deploy your Virtual Machine')
+param location string = resourceGroup().location
+
+@description('The administrator username for your Virtual Machine')
 param adminUsername string = 'azureuser'
 
-@description('SSH key for the Virtual Machine.')
+@description('The public key for SSH access to this Virtual Machine')
 @secure()
 param sshPublicKey string
 
-@description('Unique DNS Name for the Public IP used to access the Virtual Machine.')
-param dnsLabelPrefix string = toLower('${vmName}-${uniqueString(resourceGroup().id)}')
-
-@description('The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version.')
-@allowed([
-  '12.04.5-LTS'
-  '14.04.5-LTS'
-  '16.04.0-LTS'
-  '18.04-LTS'
-])
+@description('The version of Ubuntu to use for your Virtual Machine')
 param ubuntuOSVersion string = '18.04-LTS'
 
-@description('Location for all resources.')
-param location string = resourceGroup().location
+@description('The name of your Virtual Machine')
+param virtualMachineName string
 
-@description('The size of the VM')
-param vmSize string = 'Standard_B2s'
+@description('The size of your Virtual Machine')
+param virtualMachineSize string = 'Standard_B2s'
 
-@description('Name of the VNET')
-param virtualNetworkName string = '${vmName}vNet'
+@description('The disk to use for your Virtual Machine')
+param osDiskType string = 'Standard_LRS'
 
-@description('Name of the subnet in the virtual network')
-param subnetName string = '${vmName}Subnet'
+//////////
+// MAIN
+//////////
 
-@description('Name of the Network Security Group')
-param networkSecurityGroupName string = '${vmName}SecGroupNet'
-
-var publicIPAddressName = '${vmName}PublicIP'
-var networkInterfaceName = '${vmName}NetInt'
-var osDiskType = 'Standard_LRS'
-var subnetAddressPrefix = '10.1.0.0/24'
-var addressPrefix = '10.1.0.0/16'
-var linuxConfiguration = {
-  disablePasswordAuthentication: true
-  ssh: {
-    publicKeys: [
-      {
-        path: '/home/${adminUsername}/.ssh/authorized_keys'
-        keyData: sshPublicKey
-      }
-    ]
-  }
-}
-
-resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
-  name: networkInterfaceName
+resource networkInterface 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+  name: virtualMachineNetworkInterfaceName
   location: location
   properties: {
     ipConfigurations: [
@@ -68,18 +59,18 @@ resource nic 'Microsoft.Network/networkInterfaces@2020-06-01' = {
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: publicIP.id
+            id: publicIPAddress.id
           }
         }
       }
     ]
     networkSecurityGroup: {
-      id: nsg.id
+      id: networkSecurityGroup.id
     }
   }
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
   name: networkSecurityGroupName
   location: location
   properties: {
@@ -101,20 +92,20 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: virtualNetworkName
   location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
-        addressPrefix
+        virtualNetworkAddressPrefix
       ]
     }
   }
 }
 
 resource subnet 'Microsoft.Network/virtualNetworks/subnets@2020-06-01' = {
-  parent: vnet
+  parent: virtualNetwork
   name: subnetName
   properties: {
     addressPrefix: subnetAddressPrefix
@@ -123,8 +114,8 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2020-06-01' = {
   }
 }
 
-resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
-  name: publicIPAddressName
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: virtualMachinePublicIPAddressName
   location: location
   sku: {
     name: 'Basic'
@@ -139,12 +130,12 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
-  name: vmName
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+  name: virtualMachineName
   location: location
   properties: {
     hardwareProfile: {
-      vmSize: vmSize
+      vmSize: virtualMachineSize
     }
     storageProfile: {
       osDisk: {
@@ -163,19 +154,29 @@ resource vm 'Microsoft.Compute/virtualMachines@2020-06-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
+          id: networkInterface.id
         }
       ]
     }
     osProfile: {
-      computerName: vmName
+      computerName: virtualMachineName
       adminUsername: adminUsername
       adminPassword: sshPublicKey
-      linuxConfiguration: linuxConfiguration
+      linuxConfiguration: {
+        disablePasswordAuthentication: true
+        ssh: {
+          publicKeys: [
+            {
+              path: '/home/${adminUsername}/.ssh/authorized_keys'
+              keyData: sshPublicKey
+            }
+          ]
+        }
+}
     }
   }
 }
 
 output adminUsername string = adminUsername
-output hostName string = publicIP.properties.dnsSettings.fqdn
-output sshCommand string = 'ssh ${adminUsername}@${publicIP.properties.dnsSettings.fqdn}'
+output hostName string = publicIPAddress.properties.dnsSettings.fqdn
+output sshCommand string = 'ssh ${adminUsername}@${publicIPAddress.properties.dnsSettings.fqdn}'

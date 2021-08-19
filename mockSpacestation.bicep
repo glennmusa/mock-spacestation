@@ -8,6 +8,8 @@ var adminUsername = 'azureuser'
 // SSH Key Parameters
 var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
 var keyvaultTenantId = subscription().tenantId
+var privateKeySecretName = 'sshPrivateKey'
+var publicKeySecretName = 'sshPublicKey'
 
 //////////
 // PARAMS
@@ -15,24 +17,25 @@ var keyvaultTenantId = subscription().tenantId
 
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')
-param groundstationVmName string = 'mockGroundstation'
+param groundstationVirtualMachineName string = 'mockGroundstation'
 @description('The region to deploy Mock Groundstation resources into')
 param groundstationLocation string = 'eastus'
 
 // Spacestation Parameters
+@description('The name of the Mock Spacestation Virtual Machine')
+param spacestationVirtualMachineName string = 'mockSpacestation'
 @description('The region to deploy Mock Spacestation resources into')
 param spacestationLocation string = 'australiaeast'
-@description('The name of the Mock Spacestation Virtual Machine')
-param spacestationVmName string = 'mockSpacestation'
 
 //////////
 // MAIN
 //////////
 
-resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyvaultName
   location: resourceGroup().location
   properties: {
+    accessPolicies: []
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     networkAcls: {
@@ -44,7 +47,6 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
       family: 'A'
     }
     tenantId: keyvaultTenantId
-    accessPolicies: []
   }
 }
 
@@ -52,6 +54,8 @@ module sshKey 'modules/sshKey.bicep' = {
   name: 'sshKey'
   params: {
     keyvaultName: keyvault.name
+    publicKeySecretName: publicKeySecretName
+    privateKeySecretName: privateKeySecretName
   }
 }
 
@@ -59,9 +63,9 @@ module groundstation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockGroundstationVm'
   params: {
     adminUsername: adminUsername
-    sshPublicKey: sshKey.outputs.publicKey
     location: groundstationLocation
-    vmName: groundstationVmName
+    sshPublicKey: keyvault.getSecret(publicKeySecretName)
+    virtualMachineName: groundstationVirtualMachineName
   }
 }
 
@@ -69,9 +73,9 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockSpacestationVm'
   params: {
     adminUsername: adminUsername
-    sshPublicKey: sshKey.outputs.publicKey
     location: spacestationLocation
-    vmName: spacestationVmName
+    sshPublicKey: keyvault.getSecret(publicKeySecretName)
+    virtualMachineName: spacestationVirtualMachineName
   }
 }
 
@@ -81,9 +85,3 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
 
 output keyvaultName string = keyvault.name
 output privateKeySecretName string = sshKey.outputs.privateKeySecretName
-
-output groundstationAdminUsername string = adminUsername
-output groundstationHostName string = groundstation.outputs.hostName
-
-output spacestationAdminUsername string = adminUsername
-output spacestationHostName string = spacestation.outputs.hostName
