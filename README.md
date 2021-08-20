@@ -32,7 +32,7 @@ To get started developing your workload for space:
 
 1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Sync-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synchronize-the-/trials-directory)** between the two with all the bandwidth and latency configured into the deployment
 
 You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
@@ -112,7 +112,7 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
     ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
     ```
 
-## Sync the trials directory
+## Synchronize the /trials directory
 
 Once you're connected to the Spacestation, **any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at a rate of 2 megabits per second every minute**.
 
