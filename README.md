@@ -38,6 +38,12 @@ You'll need the Azure CLI and the ability to invoke a BASH script to retrieve th
 
 ## Deploy the template
 
+You have two options for deploying mock-spacestation:
+
+1. A user-interface deployment [via the Azure Portal](#via-Azure-Portal)
+
+2. A command-line deployment [via the Azure CLI](#via-Azure-CLI)
+
 ### via Azure Portal
 
 We can deploy the Mock Spacestation and Mock Groundstation to Azure from the portal with just a few clicks.
@@ -46,13 +52,13 @@ When you deploy with the "Deploy to Azure" button below, create yourself a new r
 
 ![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
 
-**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you, you'll need those to get your SSH credentials**. 
+**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you. You'll need those to get your SSH credentials**. 
 
-The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456":
+(The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456")
 
 ![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
 
-1. Deploy the template:
+1. Deploy mock-spacestation into a new resource group:
 
     [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
@@ -60,9 +66,9 @@ The generated name is usually something similar to "Microsoft.Template-${timesta
 
 ### via Azure CLI
 
-If you're comfortable with the command line, the Azure CLI provides the `deployment` command to deploy the Mock Spacestation and Mock Groundstation.
+If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation.
 
-1. First, set yourself some environment variables to make things easier, `resourceGroupName` and `deploymentName`
+1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`
 
     ```plaintext
     resourceGroupName="mock-spacestation"
@@ -77,7 +83,7 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
       --name $resourceGroupName
     ```
 
-3. Then you can deploy the Mock Spacestation and Mock Groundstation into that resource group with `az deployment group create`:
+3. And then you can deploy the Mock Spacestation and Mock Groundstation into that resource group with `az deployment group create`:
 
     ```plaintext
     az deployment group create \
@@ -109,11 +115,12 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 ## Synch the trials directory
 
 Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at 2 megabits per second every 5 minutes. This scheduled synch recreates the time delay and limited bandwidth environment of a real-world experiment executed on the ISS.
+
 _an image showing the spacestation directory_
 
 _an image showing the groundstation directory_
 
-That's it! Continue reading on for more information about how Azure built the Genomics experiment with HPE and the ISS, or how we setup our developer machines with containers to collaborate.
+##That's it! Happy hacking!## Continue reading on for more information about how we built the Genomics experiment on Azure using the HPE SBC2 and the ISS, or how we setup our developer machines with containers to collaborate.
 
 ## An example "Burst Down" workload
 
