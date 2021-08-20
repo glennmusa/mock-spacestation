@@ -24,8 +24,6 @@ sudo rsync -arvz --bwlimit=250 -e "ssh -i /home/azureuser/.ssh/mockSpacestationP
 EOF
 chmod +x /home/azureuser/scripts/sync.sh
 
-
-
 # register cron
 echo "* * * * * /home/azureuser/scripts/sync.sh >> /home/azureuser/azure-sync.log 2>&1" >> newJob
 crontab newJob
