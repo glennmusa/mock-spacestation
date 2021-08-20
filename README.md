@@ -17,6 +17,7 @@ If you're comfortable with CLI tools, the Azure CLI provides the `deployment` co
 ```plaintext
 resourceGroupName="myMockSpacestation"
 deploymentName="mockSpaceStationDeploy"
+
 az group create \
   --location eastus \
   --name $resourceGroupName
@@ -29,8 +30,8 @@ az deployment group create \
 
 ## Accessing VMs
 
-After you've deployed, take note of your Deployment Name (link to how to get this from the portal) and run [scripts/getSshCommands.sh](scripts/getSshCommands.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs:
+After you've deployed, take note of your Deployment Name (link to how to get this from the portal) and run [./getSshCommands.sh](./getSshCommands.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs:
 
 ```plaintext
-scripts/getSshCommands.sh $resourceGroupName $deploymentName
+./getSshCommands.sh $resourceGroupName $deploymentName
 ```

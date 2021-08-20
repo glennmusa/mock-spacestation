@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "15652515242777236019"
+      "templateHash": "14812151110207085181"
     }
   },
   "parameters": {
@@ -44,7 +44,9 @@
     "keyvaultName": "[toLower(format('mockisskv{0}', uniqueString(resourceGroup().id)))]",
     "keyvaultTenantId": "[subscription().tenantId]",
     "privateKeySecretName": "sshPrivateKey",
-    "publicKeySecretName": "sshPublicKey"
+    "publicKeySecretName": "sshPublicKey",
+    "sshKeyGenScriptName": "sshKeyGenScript",
+    "sshKeyGenScript": "echo -e \\'y\\' | ssh-keygen -f scratch -N \"\" &&\nprivateKey=$(cat scratch) &&\npublicKey=$(cat scratch.pub) &&\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\" &&\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\"\n"
   },
   "resources": [
     {
@@ -68,119 +70,41 @@
       }
     },
     {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
-      "name": "sshKey",
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "[variables('sshKeyGenScriptName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "AzureCLI",
       "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "keyvaultName": {
-            "value": "[variables('keyvaultName')]"
-          },
-          "publicKeySecretName": {
-            "value": "[variables('publicKeySecretName')]"
-          },
-          "privateKeySecretName": {
-            "value": "[variables('privateKeySecretName')]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.4.613.9944",
-              "templateHash": "4064193535930588779"
-            }
-          },
-          "parameters": {
-            "location": {
-              "type": "string",
-              "defaultValue": "[resourceGroup().location]",
-              "metadata": {
-                "description": "The location to host the deployment script that creates the SSH keys"
-              }
-            },
-            "keyvaultName": {
-              "type": "string",
-              "metadata": {
-                "description": "The KeyVault in which to create the secrets containing the SSH keys"
-              }
-            },
-            "publicKeySecretName": {
-              "type": "string",
-              "metadata": {
-                "description": "The name of the secret in KeyVault to store the SSH public key"
-              }
-            },
-            "privateKeySecretName": {
-              "type": "string",
-              "metadata": {
-                "description": "The name of the secret in KeyVault to store the SSH private key"
-              }
-            }
-          },
-          "functions": [],
-          "variables": {
-            "sshKeyGenScriptName": "sshKeyGenScript",
-            "sshKeyGenScript": "echo -e \\'y\\' | ssh-keygen -f scratch -N \"\" &&\nprivateKey=$(cat scratch) &&\npublicKey=$(cat scratch.pub) &&\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\" &&\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\"\n"
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Resources/deploymentScripts",
-              "apiVersion": "2020-10-01",
-              "name": "[variables('sshKeyGenScriptName')]",
-              "location": "[parameters('location')]",
-              "kind": "AzureCLI",
-              "properties": {
-                "azCliVersion": "2.25.0",
-                "cleanupPreference": "OnSuccess",
-                "scriptContent": "[variables('sshKeyGenScript')]",
-                "retentionInterval": "P1D",
-                "timeout": "PT30M"
-              }
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2019-09-01",
-              "name": "[format('{0}/{1}', parameters('keyvaultName'), parameters('publicKeySecretName'))]",
-              "properties": {
-                "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.publicKey]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2019-09-01",
-              "name": "[format('{0}/{1}', parameters('keyvaultName'), parameters('privateKeySecretName'))]",
-              "properties": {
-                "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.privateKey]"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
-              ]
-            }
-          ],
-          "outputs": {
-            "publicKey": {
-              "type": "string",
-              "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.publicKey]"
-            },
-            "privateKeySecretName": {
-              "type": "string",
-              "value": "[parameters('privateKeySecretName')]"
-            }
-          }
-        }
+        "azCliVersion": "2.25.0",
+        "cleanupPreference": "OnSuccess",
+        "scriptContent": "[variables('sshKeyGenScript')]",
+        "retentionInterval": "P1D",
+        "timeout": "PT30M"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/{1}', variables('keyvaultName'), variables('publicKeySecretName'))]",
+      "properties": {
+        "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.publicKey]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
+        "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/{1}', variables('keyvaultName'), variables('privateKeySecretName'))]",
+      "properties": {
+        "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.privateKey]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
+        "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
       ]
     },
     {
@@ -199,13 +123,11 @@
           "location": {
             "value": "[parameters('groundstationLocation')]"
           },
+          "sshPrivateKey": {
+            "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.privateKey]"
+          },
           "sshPublicKey": {
-            "reference": {
-              "keyVault": {
-                "id": "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
-              },
-              "secretName": "[variables('publicKeySecretName')]"
-            }
+            "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.publicKey]"
           },
           "virtualMachineName": {
             "value": "[parameters('groundstationVirtualMachineName')]"
@@ -218,7 +140,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "2347641579716973019"
+              "templateHash": "7102218678887297922"
             }
           },
           "parameters": {
@@ -234,6 +156,12 @@
               "defaultValue": "azureuser",
               "metadata": {
                 "description": "The administrator username for your Virtual Machine"
+              }
+            },
+            "sshPrivateKey": {
+              "type": "secureString",
+              "metadata": {
+                "description": "The private key for SSH access to other Virtual Machines in this deployment"
               }
             },
             "sshPublicKey": {
@@ -447,7 +375,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
+        "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
       ]
     },
     {
@@ -466,13 +394,11 @@
           "location": {
             "value": "[parameters('spacestationLocation')]"
           },
+          "sshPrivateKey": {
+            "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.privateKey]"
+          },
           "sshPublicKey": {
-            "reference": {
-              "keyVault": {
-                "id": "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
-              },
-              "secretName": "[variables('publicKeySecretName')]"
-            }
+            "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.publicKey]"
           },
           "virtualMachineName": {
             "value": "[parameters('spacestationVirtualMachineName')]"
@@ -485,7 +411,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "2347641579716973019"
+              "templateHash": "7102218678887297922"
             }
           },
           "parameters": {
@@ -501,6 +427,12 @@
               "defaultValue": "azureuser",
               "metadata": {
                 "description": "The administrator username for your Virtual Machine"
+              }
+            },
+            "sshPrivateKey": {
+              "type": "secureString",
+              "metadata": {
+                "description": "The private key for SSH access to other Virtual Machines in this deployment"
               }
             },
             "sshPublicKey": {
@@ -714,18 +646,34 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]"
+        "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
       ]
     }
   ],
   "outputs": {
+    "groundstationAdminUsername": {
+      "type": "string",
+      "value": "[variables('adminUsername')]"
+    },
+    "groundstationHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'mockGroundstationVm'), '2019-10-01').outputs.hostName.value]"
+    },
     "keyvaultName": {
       "type": "string",
       "value": "[variables('keyvaultName')]"
     },
     "privateKeySecretName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'sshKey'), '2019-10-01').outputs.privateKeySecretName.value]"
+      "value": "[variables('privateKeySecretName')]"
+    },
+    "spacestationAdminUsername": {
+      "type": "string",
+      "value": "[variables('adminUsername')]"
+    },
+    "spacestationHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'mockSpacestationVm'), '2019-10-01').outputs.hostName.value]"
     }
   }
 }
