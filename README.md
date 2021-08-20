@@ -24,15 +24,17 @@ For context, here's a video summary of that experiment:
 
 3. How and why **"Process at the Edge and Burst Down to the Cloud"** is valuable
 
-    When the Azure Space team performed their genomics experiment, they used High Performance Compute on the spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
+    When the Azure Space team performed their genomics experiment, they used High Performance Compute on the International Spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
 
 ## Get started with mock-spacestation
 
 To get started developing your workload for space:
 
-1. First , you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
+1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your spacestation and groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
+
+You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
 ## Deploy the template
 
@@ -40,81 +42,79 @@ To get started developing your workload for space:
 
 We can deploy the Mock Spacestation and Mock Groundstation to Azure from the portal with just a few clicks.
 
-When you deploy with the Azure Portal, create yourself a new resource group:
+When you deploy with the "Deploy to Azure" button below, create yourself a new resource group:
 
 ![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
 
-**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you, we'll need that to get your SSH credentials**. The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456"
+**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you, you'll need those to get your SSH credentials**. 
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
+The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456":
 
-Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
+![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
+
+1. Deploy the template:
+
+    [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
+
+2. Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ### via Azure CLI
 
 If you're comfortable with the command line, the Azure CLI provides the `deployment` command to deploy the Mock Spacestation and Mock Groundstation.
 
-First, set yourself some environment variables to make things easier, `resourceGroupName` and `deploymentName`
+1. First, set yourself some environment variables to make things easier, `resourceGroupName` and `deploymentName`
 
-```plaintext
-resourceGroupName="mock-spacestation"
-deploymentName="mock-spacestation-deploy"
-```
+    ```plaintext
+    resourceGroupName="mock-spacestation"
+    deploymentName="mock-spacestation-deploy"
+    ```
 
-Then, create a resource group with `az group create`:
+2. Then, create a resource group with `az group create`:
 
-```plaintext
-az group create \
-  --location eastus \
-  --name $resourceGroupName
-```
+    ```plaintext
+    az group create \
+      --location eastus \
+      --name $resourceGroupName
+    ```
 
-Then you can deploy the spacestation and groundstation into that resource group with `az deployment group create`:
+3. Then you can deploy the Mock Spacestation and Mock Groundstation into that resource group with `az deployment group create`:
 
-```plaintext
-az deployment group create \
-  --resource-group $resourceGroupName \
-  --name $deploymentName \
-  --template-file ./mockSpacestation.json
-```
+    ```plaintext
+    az deployment group create \
+      --resource-group $resourceGroupName \
+      --name $deploymentName \
+      --template-file ./mockSpacestation.json
+    ```
 
-Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
+4. Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ## Connect to the VMs
 
-After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh) and pass it the name of your resource group and the name of the deployment to retrieve the SSH key and SSH commands to remote into the deployed VMs.
+After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh) to get connected to the Mock Groundstation and Mock Spacestation.
 
-You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH commands to connect to your machines, if you're on a host that doesn't have those things, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
+1. Invoke `getConnections.sh` and pass it the name of your resource group and the name of the deployment:
 
-If you've deployed from the Azure Portal, here's how to retrieve your deployment name:
+    ```plaintext
+    ./getConnections.sh $resourceGroupName $deploymentName
+    ```
 
-![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
+2. `getConnections.sh` will place the private key on your machine and present you with your SSH commands to the Groundstation and Spacestation:
 
-```plaintext
-# in the example above, we'd set these values
-# resourceGroupName="mock-spacestation"
-# deploymentName="Microsoft.Template-20210820111307"
-
-./getConnections.sh $resourceGroupName $deploymentName
-```
-
-and getConnections.sh will place the private key on your machine and present you with your SSH commands to the Groundstation and Spacestation:
-
-```plaintext
-# your should get returned something to the effect of:
-
-INFO: Success! Private key written to ./mockSpacestationPrivateKey. Run these commands to SSH into your machines...
-ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
-ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
-```
+    ```plaintext
+    INFO: Success! Private key written to ./mockSpacestationPrivateKey. Run these commands to SSH into your machines...
+    ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
+    ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
+    ```
 
 ## Synch the trials directory
 
-Once you're on the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the Groundstation at 2 megabits per second every 5 minutes:
+Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at 2 megabits per second every 5 minutes:
 
 _an image showing the spacestation directory_
 
 _an image showing the groundstation directory_
+
+That's it! Continue reading on for more information about how Azure built the Genomics experiment with HPE and the International Space Station, or how we setup our developer machines with containers to collaborate.
 
 ## An example "Burst Down" workload
 
@@ -175,4 +175,4 @@ What is the Visual Studio Code Remote - Containers extension? Get installation s
 
 ### Manually connecting to the Spacestation and Groundstation
 
-You can also manually get configured to SSH into the Spacestation and Groudstation: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
+You can also get configured to SSH into the Spacestation and Groudstation manually: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
