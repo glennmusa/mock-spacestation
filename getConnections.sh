@@ -48,24 +48,24 @@ outputs=($(az deployment group show \
   --resource-group "$resourceGroupName" \
   --query \
     "[ \
+      properties.outputs.generateSshKeyScriptName.value, \
       properties.outputs.groundstationAdminUsername.value, \
       properties.outputs.groundstationHostName.value, \
       properties.outputs.keyvaultName.value, \
       properties.outputs.privateKeySecretName.value, \
       properties.outputs.spacestationAdminUsername.value, \
-      properties.outputs.spacestationHostName.value, \
-      properties.outputs.sshKeyGenScriptName.value \
+      properties.outputs.spacestationHostName.value \
     ]" \
   --output "tsv"))
 
 # assign values from outputs
-groundstationAdminUsername=${outputs[0]}
-groundstationHostName=${outputs[1]}
-keyvaultName=${outputs[2]}
-privateKeySecretName=${outputs[3]}
-spacestationAdminUsername=${outputs[4]}
-spacestationHostName=${outputs[5]}
-sshKeyGenScriptName=${outputs[6]}
+generateSshKeyScriptName=${outputs[0]}
+groundstationAdminUsername=${outputs[1]}
+groundstationHostName=${outputs[2]}
+keyvaultName=${outputs[3]}
+privateKeySecretName=${outputs[4]}
+spacestationAdminUsername=${outputs[5]}
+spacestationHostName=${outputs[6]}
 
 # add the secret permissions for the user
 info_log "Adding secret policies for current user $userObjectId"
@@ -90,10 +90,10 @@ info_log "Setting permissions on $privateKeySecretName to allow SSH"
 chmod 600 "$privateKeyFileName"
 
 # delete the SSH keygen script now that we have the private key
-info_log "Cleaning up remote SSH key generation script $sshKeyGenScriptName"
+info_log "Cleaning up SSH key generation script $generateSshKeyScriptName from $resourceGroupName"
 az deployment-scripts delete \
   --resource-group "$resourceGroupName" \
-  --name "$sshKeyGenScriptName" \
+  --name "$generateSshKeyScriptName" \
   --yes \
   --only-show-errors \
   --output "none"
