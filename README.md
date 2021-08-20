@@ -32,7 +32,7 @@ To get started developing your workload for space:
 
 1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment
 
 You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
@@ -46,7 +46,7 @@ You have two options for deploying mock-spacestation:
 
 ### via Azure CLI
 
-If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation:
+If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation.
 
 1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`:
 
@@ -72,7 +72,7 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
       --template-file ./mockSpacestation.json
     ```
 
-4. Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
+4. Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs)
 
 ### via Azure Portal
 
@@ -92,7 +92,7 @@ When you deploy with the "Deploy to Azure" button below, create yourself a new r
 
     [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
-2. Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
+2. Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs)
 
 ## Connect to the VMs
 
@@ -114,13 +114,17 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 
 ## Synch the trials directory
 
-Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at 2 megabits per second every 5 minutes. This scheduled synch recreates the time delay and limited bandwidth environment of a real-world experiment executed on the ISS.
+Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at a rate of 2 megabits per second every minute. 
+
+This scheduled synchronization recreates the time delay and limited bandwidth environment of a real-world experiment executed on the ISS.
 
 _an image showing the spacestation directory_
 
 _an image showing the groundstation directory_
 
-##That's it! Happy hacking!## Continue reading on for more information about how we built the Genomics experiment on Azure using the HPE SBC2 and the ISS, or how we setup our developer machines with containers to collaborate.
+**That's it!**
+
+**Happy hacking!** Continue reading on for more information about how we built the Genomics experiment on Azure using the HPE SBC2 and the ISS, or how we setup our developer machines with containers to collaborate.
 
 ## An example "Burst Down" workload
 

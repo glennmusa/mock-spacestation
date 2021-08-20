@@ -18,8 +18,9 @@ var virtualMachinePublicIPAddressName = '${virtualMachineName}publicIPAddress'
 
 var destinationScript = replace(loadTextContent('../scripts/configureDestination.sh'), 'privateKeyDefaultValue', sshPrivateKey)
 
-var sourceScriptWitHost = replace(loadTextContent('../scripts/configureSource.sh'), 'hostToSyncDefaultValue', hostToSync)
-var sourceScriptWithHostAndKey = replace(sourceScriptWitHost, 'privateKeyDefaultValue', sshPrivateKey)
+var sourceScriptWithDestination = replace(loadTextContent('../scripts/configureSource.sh'), 'hostToSyncDefaultValue', hostToSync)
+var sourceScriptWithDestinationSource = replace(sourceScriptWithDestination, 'virtualMachineNameDefaultValue', virtualMachineName)
+var sourceScriptWithDestinationSourceKey = replace(sourceScriptWithDestinationSource, 'privateKeyDefaultValue', sshPrivateKey)
 
 //////////
 // PARAMS
@@ -214,7 +215,7 @@ resource configureSource 'Microsoft.Compute/virtualMachines/extensions@2019-07-0
     typeHandlerVersion: '2.1'
     autoUpgradeMinorVersion: true
     protectedSettings: {
-       script: base64(sourceScriptWithHostAndKey)
+       script: base64(sourceScriptWithDestinationSourceKey)
     }
   }
 }
