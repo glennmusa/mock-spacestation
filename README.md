@@ -91,6 +91,10 @@ If you've deployed from the Azure Portal, here's how to retrieve your deployment
 ![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
 
 ```plaintext
+# in the example above, we'd set:
+# resourceGroupName="mock-spacestation"
+# deploymentName="Microsoft.Template-20210820111307"
+
 ./getConnections.sh $resourceGroupName $deploymentName
 
 # should return something to the effect of:
@@ -152,8 +156,20 @@ It's really easy to get started with GitHub Codespaces and/or Visual Studio Code
 
 ### GitHub Codespaces
 
-- _how to open this with GitHub Codespaces_
+If you or your organization uses Codespaces, it's remarkably easy to use our development environment. Just click the green `Code` icon on the main page of this repository and select `New Codespace`:
+
+![Launching the dev environment with GitHub Codespaces](docs/images/spacestation_codespaces_smaller.gif)
+
+What are Codespaces? Get more information here: [https://docs.github.com/en/codespaces](https://docs.github.com/en/codespaces)
 
 ### Visual Studio Code Remote - Containers
 
-- _how to open this with Visual Studio Code Remote - Containers extension_
+It's also easy to use our development environment with Visual Studio Code and the Remote - Containers extension:
+
+![Launching the dev environment with Visual Studio Code](docs/images/remote-containers-readme.gif)
+
+What is the Visual Studio Code Remote - Containers extension? Get installation steps and more information here: [https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+### Manually connecting to the Spacestation and Groundstation
+
+You can also manually get configured to SSH to the Spacestation and Groudstation: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
