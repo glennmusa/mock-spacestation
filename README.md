@@ -22,7 +22,7 @@ For context, here's a video summary of that experiment executed in August of 202
   
     The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the ISS: 2 *megabits* per second.
 
-3. **Processing at the Edge and bursting down to the cloud**
+3. **Processing at The Edge and "Bursting Down" to The Cloud**
 
     When the Azure Space team performed their genomics experiment, they used computing power of the HPE SBC2 on-board the ISS to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 megabit per second pipe, then scaled up analysis and compute on a global scale with Azure. 
 
