@@ -66,7 +66,7 @@ When you deploy with the "Deploy to Azure" button below, create yourself a new r
 
 ### via Azure CLI
 
-If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation.
+If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation:
 
 1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`
 
