@@ -2,7 +2,7 @@
 
 ## What is mock-spacestation?
 
-mock-spacestation is a Bicep template and a some scripts that deploys a Mock Spacestation and Mock Groundstation to Azure to enable developers and enthusiasts to develop and test their own workloads for space with similar constraints to those seen working with the International Space Station.
+mock-spacestation is a Bicep template that deploys a Mock Spacestation and Mock Groundstation to Azure to enable developers and enthusiasts to develop and test their own workloads for space with similar constraints to those seen working with the International Space Station.
 
 This Mock Groundstation and Mock Spacestation is how the Azure Space team developed and tested their experiment workload while preparing for access to HPE's Spaceborne Computer 2 and the International Space Station.
 
@@ -38,10 +38,10 @@ To get started developing your workload for space:
 
 ## Open the development environment
 
-Whether you're on Windows or Linux or otherwise, it's pretty handy to use the [container described in this repository](./devcontainer/Dockerfile) as your development environment. It's what the team authored these scripts with and can best ensure compatibility.
+Whether you're on Windows or Linux or otherwise, it's pretty handy to use the [container described in this repository](./devcontainer/Dockerfile) as your development environment. It's what the team authored these scripts with and can best ensure compatibility, and we just think it's pretty cool to have our developer machines ready to go in seconds with all the tools we need.
 
-- _how to open with GitHub Codespaces_
-- _how to open with Visual Studio Code Remote - Containers extension_
+- _how to open this with GitHub Codespaces_
+- _how to open this with Visual Studio Code Remote - Containers extension_
 
 ## Deploy the template
 
@@ -57,7 +57,7 @@ And make note of the Deployment Name that gets generated for you, we'll need tha
 
 _image indicating the deployment name_
 
-And when you're ready, deploy to Azure:
+Then when you're ready, deploy to Azure:
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
@@ -92,6 +92,10 @@ az deployment group create \
 ## Connect to VMs
 
 After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh), passing in the name of your resource group and the deployment name, to retrieve the commands to SSH into the deployed VMs.
+
+If you've deployed from the Azure Portal, here's how to retrieve your deployment name:
+
+_image that shows deployment name_
 
 ```plaintext
 ./getConnections.sh $resourceGroupName $deploymentName
