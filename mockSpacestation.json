@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "14473341363148839004"
+      "templateHash": "15163550164709556172"
     }
   },
   "parameters": {
@@ -140,7 +140,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "8387825148628704231"
+              "templateHash": "10053327841361986855"
             }
           },
           "parameters": {
@@ -376,7 +376,7 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
-                  "script": "IyEvYmluL2Jhc2gKCmVjaG8gIkhlbGxvLCBXb3JsZCEiID4+IC9ob21lL2F6dXJldXNlci9oZWxsb1dvcmxkLnR4dA=="
+                  "script": "[base64(replace('#!/bin/bash\n\nhost_to_sync=\"hostToSyncDefaultValue\"\n\necho \"Hello, World! Here''s where you set up synching to $host_to_sync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt', 'hostToSyncDefaultValue', parameters('hostToSync')))]"
                 }
               },
               "dependsOn": [
@@ -440,7 +440,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "8387825148628704231"
+              "templateHash": "10053327841361986855"
             }
           },
           "parameters": {
@@ -676,7 +676,7 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
-                  "script": "IyEvYmluL2Jhc2gKCmVjaG8gIkhlbGxvLCBXb3JsZCEiID4+IC9ob21lL2F6dXJldXNlci9oZWxsb1dvcmxkLnR4dA=="
+                  "script": "[base64(replace('#!/bin/bash\n\nhost_to_sync=\"hostToSyncDefaultValue\"\n\necho \"Hello, World! Here''s where you set up synching to $host_to_sync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt', 'hostToSyncDefaultValue', parameters('hostToSync')))]"
                 }
               },
               "dependsOn": [

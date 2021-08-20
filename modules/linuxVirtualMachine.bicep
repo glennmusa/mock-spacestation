@@ -194,7 +194,7 @@ resource configureSyncExtension 'Microsoft.Compute/virtualMachines/extensions@20
     typeHandlerVersion: '2.1'
     autoUpgradeMinorVersion: true
     protectedSettings: {
-       script: loadFileAsBase64('../scripts/helloWorld.sh')
+       script: base64(replace(loadTextContent('../scripts/helloWorld.sh'), 'hostToSyncDefaultValue', hostToSync))
     }
   }
 }
