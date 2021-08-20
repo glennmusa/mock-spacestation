@@ -23,8 +23,8 @@ info_log() {
 
 # Check for Azure CLI
 if ! command -v az &> /dev/null; then
-    echo "az could not be found. This script requires the Azure CLI."
-    echo "see https://docs.microsoft.com/en-us/cli/azure/install-azure-cli for installation instructions."
+    error_log "az could not be found. This script requires the Azure CLI."
+    info_log "see https://docs.microsoft.com/en-us/cli/azure/install-azure-cli for installation instructions."
     exit 1
 fi
 
@@ -44,8 +44,8 @@ userObjectId=$(az ad signed-in-user show --query objectId --output tsv)
 # get deployment output
 info_log "Querying outputs from deployment $deploymentName into resource group $resourceGroupName"
 outputs=($(az deployment group show \
-  -g "$resourceGroupName" \
-  -n "$deploymentName" \
+  --name "$deploymentName" \
+  --resource-group "$resourceGroupName" \
   --query \
     "[ \
       properties.outputs.groundstationAdminUsername.value, \
