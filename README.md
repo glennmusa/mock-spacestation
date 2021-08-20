@@ -12,15 +12,15 @@ For context, here's a video summary of that experiment:
 
 ## What it simulates
 
-1. Latency
+1. **Latency**
   
     The Mock Groundstation is located in East US and the Mock Spacestation is located in Australia to simulate the speed of light latency and many international hops communication with the International Space Station goes through.
 
-2. Bandwidth
+2. **Bandwidth**
   
-    The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the International Spacestation: 2 megabits per second.
+    The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the International Spacestation: 2 *megabits* per second.
 
-3. The "Burst Down" Pattern
+3. How and why **"Burst Down"** is valuable
 
     When the Azure Space team performed their genomics experiment, they used High Performance Compute on the spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
 
@@ -28,11 +28,11 @@ For context, here's a video summary of that experiment:
 
 To get started developing your workload for space:
 
-1. First, open this repo in [our development environment](#Open-the-development-environment)
+1. First, open this repo in **[our development environment](#Open-the-development-environment)**
 
-2. Then, you'll [deploy the Mock Spacestation template](#Deploy-the-template)
+2. Then, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-3. Finally, you'll execute a small script to [get the ssh commands to connect](#Connect-to-VMs) to your spacestation and groundstation.
+3. Finally, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-VMs)** to your spacestation and groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
 
 ## Open the development environment
 
@@ -91,11 +91,24 @@ az deployment group create \
 
 ## Connect to VMs
 
-After you've deployed, with your Resource Group Name and Deployment Name (link to how to get this from the portal) and run [./getConnections.sh](./getConnections.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs.
+After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh), passing in the name of your resource group and the deployment name, to retrieve the commands to SSH into the deployed VMs.
 
 ```plaintext
 ./getConnections.sh $resourceGroupName $deploymentName
+
+# should return something to the effect of:
+# INFO: Success! Private key written to ./mockSpacestationPrivateKey. Run these commands to SSH into your machines...
+# ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
+# ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
 ```
+
+## Synch the trials directory
+
+Once you're on the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the Groundstation at 2 megabits per second every 5 minutes as seen in [scripts/configureSource.sh](scripts/configureSource.sh):
+
+_an image showing the spacestation directory_
+
+_an image showing the groundstation directory_
 
 ## An example "Burst Down" workload
 
