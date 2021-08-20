@@ -16,6 +16,11 @@ var networkSecurityGroupName = '${virtualMachineName}NetworkSecurityGroup'
 var virtualMachineNetworkInterfaceName = '${virtualMachineName}NetworkInterface'
 var virtualMachinePublicIPAddressName = '${virtualMachineName}publicIPAddress'
 
+var destinationScript = replace(loadTextContent('../scripts/configureDestination.sh'), 'privateKeyDefaultValue', sshPrivateKey)
+
+var sourceScriptWitHost = replace(loadTextContent('../scripts/configureSource.sh'), 'hostToSyncDefaultValue', hostToSync)
+var sourceScriptWithHostAndKey = replace(sourceScriptWitHost, 'privateKeyDefaultValue', sshPrivateKey)
+
 //////////
 // PARAMS
 //////////
@@ -184,9 +189,9 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-06-01' = {
   }
 }
 
-resource configureSyncExtension 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if(!empty(hostToSync)) {
+resource configureDestination 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if(empty(hostToSync)) {
   parent: virtualMachine
-  name: 'configureSyncExtension'
+  name: 'configureDestination'
   location: location
   properties: {
     publisher: 'Microsoft.Azure.Extensions'
@@ -194,7 +199,22 @@ resource configureSyncExtension 'Microsoft.Compute/virtualMachines/extensions@20
     typeHandlerVersion: '2.1'
     autoUpgradeMinorVersion: true
     protectedSettings: {
-       script: base64(replace(loadTextContent('../scripts/helloWorld.sh'), 'hostToSyncDefaultValue', hostToSync))
+       script: base64(destinationScript)
+    }
+  }
+}
+
+resource configureSource 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if(!empty(hostToSync)) {
+  parent: virtualMachine
+  name: 'configureSource'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Extensions'
+    type: 'CustomScript'
+    typeHandlerVersion: '2.1'
+    autoUpgradeMinorVersion: true
+    protectedSettings: {
+       script: base64(sourceScriptWithHostAndKey)
     }
   }
 }

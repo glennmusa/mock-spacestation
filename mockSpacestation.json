@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "15163550164709556172"
+      "templateHash": "1719670104521324292"
     }
   },
   "parameters": {
@@ -140,7 +140,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "10053327841361986855"
+              "templateHash": "1914208856261928588"
             }
           },
           "parameters": {
@@ -214,7 +214,10 @@
             "subnetAddressPrefix": "10.1.0.0/24",
             "networkSecurityGroupName": "[format('{0}NetworkSecurityGroup', parameters('virtualMachineName'))]",
             "virtualMachineNetworkInterfaceName": "[format('{0}NetworkInterface', parameters('virtualMachineName'))]",
-            "virtualMachinePublicIPAddressName": "[format('{0}publicIPAddress', parameters('virtualMachineName'))]"
+            "virtualMachinePublicIPAddressName": "[format('{0}publicIPAddress', parameters('virtualMachineName'))]",
+            "destinationScript": "[replace('#!/bin/bash\n\n# setup trials directory\nmkdir /home/azureuser/trials\n\n# write private key\necho \"privateKeyDefaultValue\" >> /home/azureuser/.ssh/mockSpacestationPrivateKey\nchmod 600 /home/azureuser/.ssh/mockSpacestationPrivateKey\n', 'privateKeyDefaultValue', parameters('sshPrivateKey'))]",
+            "sourceScriptWitHost": "[replace('#!/bin/bash\n\n# some hello world stuff\nhostToSync=\"hostToSyncDefaultValue\"\necho \"Here''s where you set up synching to $hostToSync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt\n\n# setup trials directory\nmkdir /home/azureuser/trials\n\n# write private key\necho \"privateKeyDefaultValue\" >> /home/azureuser/.ssh/mockSpacestationPrivateKey\nchmod 600 /home/azureuser/.ssh/mockSpacestationPrivateKey\n\n# setup sync script\nmkdir /home/azureuser/scripts\ntouch /home/azureuser/scripts/sync.sh\ncat > /home/azureuser/scripts/sync.sh <<EOF\n#!/bin/bash\nrsync -arvz --bwlimit=250 -e \"ssh -i /home/azureuser/.ssh/mockSpacestationPrivateKey\" azureuser@hostToSyncDefaultValue:/trials/* /trials/\nEOF\n\n# register cron\n# echo \"* * * * * echo hello\" >> syncJob\n# echo \"*/5 * * * * /home/azureuser/scripts/sync.sh >> /home/azureuser/azure-sync.log 2>&1\" >> syncJob\n# crontab syncJob\n# rm syncJob\n# crontab -l\n', 'hostToSyncDefaultValue', parameters('hostToSync'))]",
+            "sourceScriptWithHostAndKey": "[replace(variables('sourceScriptWitHost'), 'privateKeyDefaultValue', parameters('sshPrivateKey'))]"
           },
           "resources": [
             {
@@ -365,10 +368,10 @@
               ]
             },
             {
-              "condition": "[not(empty(parameters('hostToSync')))]",
+              "condition": "[empty(parameters('hostToSync'))]",
               "type": "Microsoft.Compute/virtualMachines/extensions",
               "apiVersion": "2019-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSyncExtension')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureDestination')]",
               "location": "[parameters('location')]",
               "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -376,7 +379,26 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
-                  "script": "[base64(replace('#!/bin/bash\n\nhost_to_sync=\"hostToSyncDefaultValue\"\n\necho \"Hello, World! Here''s where you set up synching to $host_to_sync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt', 'hostToSyncDefaultValue', parameters('hostToSync')))]"
+                  "script": "[base64(variables('destinationScript'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('hostToSync')))]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2019-07-01",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSource')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                  "script": "[base64(variables('sourceScriptWithHostAndKey'))]"
                 }
               },
               "dependsOn": [
@@ -440,7 +462,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "10053327841361986855"
+              "templateHash": "1914208856261928588"
             }
           },
           "parameters": {
@@ -514,7 +536,10 @@
             "subnetAddressPrefix": "10.1.0.0/24",
             "networkSecurityGroupName": "[format('{0}NetworkSecurityGroup', parameters('virtualMachineName'))]",
             "virtualMachineNetworkInterfaceName": "[format('{0}NetworkInterface', parameters('virtualMachineName'))]",
-            "virtualMachinePublicIPAddressName": "[format('{0}publicIPAddress', parameters('virtualMachineName'))]"
+            "virtualMachinePublicIPAddressName": "[format('{0}publicIPAddress', parameters('virtualMachineName'))]",
+            "destinationScript": "[replace('#!/bin/bash\n\n# setup trials directory\nmkdir /home/azureuser/trials\n\n# write private key\necho \"privateKeyDefaultValue\" >> /home/azureuser/.ssh/mockSpacestationPrivateKey\nchmod 600 /home/azureuser/.ssh/mockSpacestationPrivateKey\n', 'privateKeyDefaultValue', parameters('sshPrivateKey'))]",
+            "sourceScriptWitHost": "[replace('#!/bin/bash\n\n# some hello world stuff\nhostToSync=\"hostToSyncDefaultValue\"\necho \"Here''s where you set up synching to $hostToSync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt\n\n# setup trials directory\nmkdir /home/azureuser/trials\n\n# write private key\necho \"privateKeyDefaultValue\" >> /home/azureuser/.ssh/mockSpacestationPrivateKey\nchmod 600 /home/azureuser/.ssh/mockSpacestationPrivateKey\n\n# setup sync script\nmkdir /home/azureuser/scripts\ntouch /home/azureuser/scripts/sync.sh\ncat > /home/azureuser/scripts/sync.sh <<EOF\n#!/bin/bash\nrsync -arvz --bwlimit=250 -e \"ssh -i /home/azureuser/.ssh/mockSpacestationPrivateKey\" azureuser@hostToSyncDefaultValue:/trials/* /trials/\nEOF\n\n# register cron\n# echo \"* * * * * echo hello\" >> syncJob\n# echo \"*/5 * * * * /home/azureuser/scripts/sync.sh >> /home/azureuser/azure-sync.log 2>&1\" >> syncJob\n# crontab syncJob\n# rm syncJob\n# crontab -l\n', 'hostToSyncDefaultValue', parameters('hostToSync'))]",
+            "sourceScriptWithHostAndKey": "[replace(variables('sourceScriptWitHost'), 'privateKeyDefaultValue', parameters('sshPrivateKey'))]"
           },
           "resources": [
             {
@@ -665,10 +690,10 @@
               ]
             },
             {
-              "condition": "[not(empty(parameters('hostToSync')))]",
+              "condition": "[empty(parameters('hostToSync'))]",
               "type": "Microsoft.Compute/virtualMachines/extensions",
               "apiVersion": "2019-07-01",
-              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSyncExtension')]",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureDestination')]",
               "location": "[parameters('location')]",
               "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -676,7 +701,26 @@
                 "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
-                  "script": "[base64(replace('#!/bin/bash\n\nhost_to_sync=\"hostToSyncDefaultValue\"\n\necho \"Hello, World! Here''s where you set up synching to $host_to_sync! If Bicep magic worked, you should see a machine name. If it didn''t, you''ll see some default value.\" >> /home/azureuser/helloWorld.txt', 'hostToSyncDefaultValue', parameters('hostToSync')))]"
+                  "script": "[base64(variables('destinationScript'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('hostToSync')))]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2019-07-01",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSource')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                  "script": "[base64(variables('sourceScriptWithHostAndKey'))]"
                 }
               },
               "dependsOn": [
