@@ -30,8 +30,8 @@ az deployment group create \
 
 ## Accessing VMs
 
-After you've deployed, take note of your Deployment Name (link to how to get this from the portal) and run [./getSshCommands.sh](./getSshCommands.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs:
+After you've deployed, take note of your Deployment Name (link to how to get this from the portal) and run [./getConnections.sh](./getConnections.sh) passing in the name of your resource group and the deployment name to retrieve the commands to SSH into the deployed VMs:
 
 ```plaintext
-./getSshCommands.sh $resourceGroupName $deploymentName
+./getConnections.sh $resourceGroupName $deploymentName
 ```

@@ -4,7 +4,7 @@
 # SC2207: Prefer mapfile or read -a to split command output (or quote to avoid splitting).
 #         Disabled because we want to split on newlines from deployment output
 #
-# getSshCommands.sh - retrieves output from a mockSpacestation.bicep deployment
+# getConnections.sh - retrieves output from a mockSpacestation.bicep deployment
 #   and adds the current user to the KeyVault Administrator role
 #   and writes the private key to the specified file
 #   and outputs to the user the commands to SSH to their machines
