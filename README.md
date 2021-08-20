@@ -4,7 +4,9 @@
 
 mock-spacestation is a Bicep template and a some scripts that deploys a Mock Spacestation and Mock Groundstation to Azure to enable developers and enthusiasts to develop and test their own workloads for space with similar constraints to those seen working with the International Space Station.
 
-This Mock Groundstation and Mock Spacestation is how the Azure Space team developed and tested their experiment workload without access to HPE's Spaceborne Computer 2 nor the International Space Station.
+This Mock Groundstation and Mock Spacestation is how the Azure Space team developed and tested their experiment workload while preparing for access to HPE's Spaceborne Computer 2 and the International Space Station.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
 For context, here's a video summary of that experiment:
 
