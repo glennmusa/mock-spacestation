@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "14812151110207085181"
+      "templateHash": "9186687085589762225"
     }
   },
   "parameters": {
@@ -46,7 +46,7 @@
     "privateKeySecretName": "sshPrivateKey",
     "publicKeySecretName": "sshPublicKey",
     "sshKeyGenScriptName": "sshKeyGenScript",
-    "sshKeyGenScript": "echo -e \\'y\\' | ssh-keygen -f scratch -N \"\" &&\nprivateKey=$(cat scratch) &&\npublicKey=$(cat scratch.pub) &&\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\" &&\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\"\n"
+    "sshKeyGenScript": "#!/bin/bash\necho -e \\'y\\' | ssh-keygen -f scratch -N \"\"\nprivateKey=$(cat scratch)\npublicKey=$(cat scratch.pub)\njson=\"{\\\"keyinfo\\\":{\\\"privateKey\\\":\\\"$privateKey\\\",\\\"publicKey\\\":\\\"$publicKey\\\"}}\"\necho \"$json\" > \"$AZ_SCRIPTS_OUTPUT_PATH\""
   },
   "resources": [
     {
@@ -674,6 +674,10 @@
     "spacestationHostName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'mockSpacestationVm'), '2019-10-01').outputs.hostName.value]"
+    },
+    "sshKeyGenScriptName": {
+      "type": "string",
+      "value": "[variables('sshKeyGenScriptName')]"
     }
   }
 }
