@@ -181,4 +181,4 @@ What is the Visual Studio Code Remote - Containers extension? Get installation s
 
 ### Manually connecting to the Spacestation and Groundstation
 
-You can also get configured to SSH into the Spacestation and Groudstation manually: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
+You can also get configured to SSH into the Spacestation and Groundstation manually: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
