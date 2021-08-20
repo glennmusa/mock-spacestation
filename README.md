@@ -2,9 +2,9 @@
 
 ## What is mock-spacestation?
 
-mock-spacestation is a Bicep template that deploys a Mock Spacestation and Mock Groundstation to Azure to enable developers and enthusiasts to develop and test their own workloads for space with similar constraints to those seen working with the International Space Station.
+mock-spacestation is a Bicep template that deploys a Mock Spacestation and Mock Groundstation to Azure to enable developers and enthusiasts to develop and test their own workloads for space with similar constraints to those seen working with the International Space Station (ISS).
 
-The Mock Groundstation and Mock Spacestation virtual machines deployed by this template are how the Azure Space team developed and tested their experiment workload while preparing for access to HPE's Spaceborne Computer 2 and the International Space Station.
+The Mock Groundstation and Mock Spacestation virtual machines deployed by this template are how the Azure Space team developed and tested their experiment workload while preparing for access to the Hewlett Packard Enterprise (HPE) Spaceborne Computer 2 (SBC2) and the ISS.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
@@ -16,15 +16,15 @@ For context, here's a video summary of that experiment:
 
 1. **Latency**
   
-    The Mock Groundstation is located in East US and the Mock Spacestation is located in Australia to simulate the speed of light latency and many international hops communication with the International Space Station goes through.
+    The Mock Groundstation is located in East US and the Mock Spacestation is located in Australia to simulate the speed of light latency and many international hops that communication with the ISS traverses.
 
 2. **Bandwidth**
   
-    The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the International Spacestation: 2 *megabits* per second.
+    The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the ISS: 2 *megabits* per second.
 
 3. **Processing at the Edge and bursting down to the cloud**
 
-    When the Azure Space team performed their genomics experiment, they used High Performance Compute on the International Spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
+    When the Azure Space team performed their genomics experiment, they used computing power of the HPE SBC2 on-board the ISS to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 megabit per second pipe, then scaled up analysis and compute on a global scale with Azure. 
 
 ## Get started with mock-spacestation
 
@@ -108,13 +108,12 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 
 ## Synch the trials directory
 
-Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at 2 megabits per second every 5 minutes:
-
+Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at 2 megabits per second every 5 minutes. This scheduled synch recreates the time delay and limited bandwidth environment of a real-world experiment executed on the ISS.
 _an image showing the spacestation directory_
 
 _an image showing the groundstation directory_
 
-That's it! Continue reading on for more information about how Azure built the Genomics experiment with HPE and the International Space Station, or how we setup our developer machines with containers to collaborate.
+That's it! Continue reading on for more information about how Azure built the Genomics experiment with HPE and the ISS, or how we setup our developer machines with containers to collaborate.
 
 ## An example "Burst Down" workload
 
