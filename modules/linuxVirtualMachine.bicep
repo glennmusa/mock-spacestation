@@ -26,6 +26,9 @@ param location string = resourceGroup().location
 @description('The administrator username for your Virtual Machine')
 param adminUsername string = 'azureuser'
 
+@description('The hostname of the machine to configure rsync to')
+param hostToSync string = ''
+
 @description('The private key for SSH access to other Virtual Machines in this deployment')
 @secure()
 param sshPrivateKey string
@@ -176,7 +179,22 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-06-01' = {
             }
           ]
         }
+      }
+    }
+  }
 }
+
+resource configureSyncExtension 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if(!empty(hostToSync)) {
+  parent: virtualMachine
+  name: 'configureSyncExtension'
+  location: resourceGroup().location
+  properties: {
+    publisher: 'Microsoft.Azure.Extensions'
+    type: 'CustomScript'
+    typeHandlerVersion: '2.1'
+    autoUpgradeMinorVersion: true
+    protectedSettings: {
+       script: loadFileAsBase64('../scripts/helloWorld.sh')
     }
   }
 }

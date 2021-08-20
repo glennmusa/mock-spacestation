@@ -97,6 +97,7 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
   params: {
     adminUsername: adminUsername
     location: spacestationLocation
+    hostToSync: groundstation.outputs.hostName
     sshPrivateKey: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
     sshPublicKey: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
     virtualMachineName: spacestationVirtualMachineName
