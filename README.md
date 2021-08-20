@@ -15,16 +15,16 @@ For context, here's a video summary of that experiment executed in August of 202
 ## What it simulates
 
 1. **Latency**
-  
+
     The Mock Groundstation is located in East US and the Mock Spacestation is located in Australia to simulate the speed of light latency and many international hops that communication with the ISS traverses.
 
 2. **Bandwidth**
-  
+
     The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the ISS: 2 *megabits* per second.
 
 3. **Processing at The Edge and "Bursting Down" to The Cloud**
 
-    When the Azure Space team performed their genomics experiment, they used computing power of the HPE SBC2 on-board the ISS to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 megabit per second pipe, then scaled up analysis and compute on a global scale with Azure. 
+    When the Azure Space team performed their genomics experiment, they used computing power of the HPE SBC2 on-board the ISS to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 megabit per second pipe, then scaled up analysis and compute on a global scale with Azure.
 
 ## Get started with mock-spacestation
 
@@ -32,7 +32,7 @@ To get started developing your workload for space:
 
 1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Sync-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment
 
 You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
@@ -50,14 +50,14 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
 
 1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`:
 
-    ```plaintext
+    ```bash
     resourceGroupName="mock-spacestation"
     deploymentName="mock-spacestation-deploy"
     ```
 
 2. Then, create a resource group with `az group create`:
 
-    ```plaintext
+    ```bash
     az group create \
       --location eastus \
       --name $resourceGroupName
@@ -65,7 +65,7 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
 
 3. And then you can deploy the Mock Spacestation and Mock Groundstation into that resource group with `az deployment group create`:
 
-    ```plaintext
+    ```bash
     az deployment group create \
       --resource-group $resourceGroupName \
       --name $deploymentName \
@@ -82,7 +82,7 @@ When you deploy with the "Deploy to Azure" button below, create yourself a new r
 
 ![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
 
-**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you. You'll need those to get your SSH credentials**. 
+**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you. You'll need those to get your SSH credentials**.
 
 (The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456")
 
@@ -100,7 +100,7 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 
 1. Invoke `getConnections.sh` and pass it the name of your resource group and the name of the deployment:
 
-    ```plaintext
+    ```bash
     ./getConnections.sh $resourceGroupName $deploymentName
     ```
 
@@ -112,15 +112,48 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
     ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
     ```
 
-## Synch the trials directory
+## Sync the trials directory
 
-Once you're connected to the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at a rate of 2 megabits per second every minute. 
+Once you're connected to the Spacestation, **any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at a rate of 2 megabits per second every minute**.
 
 This scheduled synchronization recreates the time delay and limited bandwidth environment of a real-world experiment executed on the ISS.
 
-_an image showing the spacestation directory_
+![The Mock Groundstation and Mock Spacestation /trials directories in sync](docs/images/synched-stations.png)
 
-_an image showing the groundstation directory_
+1. Place a file or directory in `/home/azureuser/trials`:
+
+    ```bash
+    # on the Mock Spacestation
+    echo "Hello! It is currently $(date) on the mockSpacestation! Happy Hacking!" >> /home/azureuser/trials/hello.txt
+    ```
+
+2. And within a minute or so, on the Mock Groundstation, you should see that file in the same directory:
+
+    ```bash
+    # now on the Mock Groundstation
+    cd /home/azureuser/trials
+    cat hello.txt
+    Hello! It is currently Fri Aug 20 21:10:10 UTC 2021 on the mockSpacestation! Happy Hacking!
+    ```
+
+3. On the Mock Spacestation, You can inspect the contents of `azure-sync.log` to see file and directory transmission history and transfer speeds:
+
+    ```bash
+    # back on the Mock Spacestation
+    cat /home/azureuser/azure-sync.log
+    ```
+
+4. Which yields output from `rsync` operations like:
+
+    ```plaintext
+    sent 177 bytes  received 66 bytes  44.18 bytes/sec
+    total size is 92  speedup is 0.38
+    opening connection using: ssh -i /home/azureuser/.ssh/mockSpacestationPrivateKey -l azureuser mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com rsync --server -vvlogDtprze.iLsfxC --bwlimit=250 . /home/azureuser/trials  (12 args)
+    sending incremental file list
+    delta-transmission enabled
+    hello.txt is uptodate
+    total: matches=0  hash_hits=0  false_alarms=0 data=0
+    ```
 
 **That's it!**
 
@@ -161,7 +194,7 @@ After the Python workload completes, the compressed output folder is sent to the
 
 ## Using our development environment
 
-Whether you're on Windows or Linux or otherwise, it's pretty handy to use a [container described in the repository](./devcontainer/Dockerfile) as your development environment. 
+Whether you're on Windows or Linux or otherwise, it's pretty handy to use a [container described in the repository](./devcontainer/Dockerfile) as your development environment.
 
 Our environment comes with all the tools we used to author this repo so it's where we can best ensure compatibility (plus, we just think it's pretty cool to have our developer machines ready to go with all the tools we need in seconds).
 

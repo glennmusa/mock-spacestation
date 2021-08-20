@@ -9,11 +9,8 @@ chown azureuser /home/azureuser/trials
 echo "privateKeyDefaultValue" >> /home/azureuser/.ssh/mockSpacestationPrivateKey
 chmod 600 /home/azureuser/.ssh/mockSpacestationPrivateKey
 
-# write destination machine to known_hosts
+# write destination machine keys to known_hosts
 ssh-keyscan hostToSyncDefaultValue >> /root/.ssh/known_hosts
-
-# but if this doesn't work above this workaround did
-# sudo rsync -arvz --bwlimit=250 -e "ssh -i /home/azureuser/.ssh/mockSpacestationPrivateKey -o StrictHostKeyChecking=no" --verbose --progress /home/azureuser/trials/* azureuser@hostToSyncDefaultValue:/home/azureuser/trials
 
 # setup sync script
 mkdir /home/azureuser/scripts

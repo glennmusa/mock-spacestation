@@ -20,7 +20,7 @@ If you've deployed mock-spacestation via the Azure Portal or the Azure CLI and d
 
 5. Use the SSH private key you downloaded to SSH to the machine:
 
-    ```plaintext
+    ```bash
     ssh -i ./thePrivateKeyDownloadedFromKeyVault azureuser@mockspacestation-abc123def456.australiaeast.cloudapp.azure.com
     ```
 
