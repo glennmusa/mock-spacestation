@@ -5,15 +5,15 @@
 // Administrator Values
 var adminUsername = 'azureuser'
 
-// SSH Key Values
+// SSH Key Generation Script Values
+var generateSshKeyScriptContent = loadTextContent('./scripts/generateSshKey.sh')
+var generateSshKeyScriptName = 'generateSshKey'
+
+// KeyVault Values
 var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
 var keyvaultTenantId = subscription().tenantId
 var privateKeySecretName = 'sshPrivateKey'
 var publicKeySecretName = 'sshPublicKey'
-
-// SSH Key Generation Script Values
-var sshKeyGenScriptName = 'sshKeyGenScript'
-var sshKeyGenScript = loadTextContent('./scripts/sshKeyGen.sh')
 
 //////////
 // PARAMS
@@ -54,15 +54,15 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   }
 }
 
-resource sshKeyGenerationScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: sshKeyGenScriptName
+resource generateSshKeyScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: generateSshKeyScriptName
   location: resourceGroup().location
   kind: 'AzureCLI'
   properties: {
     azCliVersion: '2.25.0'
     cleanupPreference: 'OnSuccess'
-    scriptContent: sshKeyGenScript
     retentionInterval: 'P1D' // retain script for 1 day
+    scriptContent: generateSshKeyScriptContent
     timeout: 'PT30M' // timeout after 30 minutes
   }
 }
@@ -70,14 +70,14 @@ resource sshKeyGenerationScript 'Microsoft.Resources/deploymentScripts@2020-10-0
 resource publicKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
   name: '${keyvault.name}/${publicKeySecretName}'
   properties: {
-    value: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+    value: generateSshKeyScript.properties.outputs.keyinfo.publicKey
   }
 }
 
 resource privateKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
   name: '${keyvault.name}/${privateKeySecretName}'
   properties: {
-    value: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
+    value: generateSshKeyScript.properties.outputs.keyinfo.privateKey
   }
 }
 
@@ -86,8 +86,8 @@ module groundstation 'modules/linuxVirtualMachine.bicep' = {
   params: {
     adminUsername: adminUsername
     location: groundstationLocation
-    sshPrivateKey: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
-    sshPublicKey: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+    sshPrivateKey: generateSshKeyScript.properties.outputs.keyinfo.privateKey
+    sshPublicKey: generateSshKeyScript.properties.outputs.keyinfo.publicKey
     virtualMachineName: groundstationVirtualMachineName
   }
 }
@@ -98,8 +98,8 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
     adminUsername: adminUsername
     location: spacestationLocation
     hostToSync: groundstation.outputs.hostName
-    sshPrivateKey: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
-    sshPublicKey: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+    sshPrivateKey: generateSshKeyScript.properties.outputs.keyinfo.privateKey
+    sshPublicKey: generateSshKeyScript.properties.outputs.keyinfo.publicKey
     virtualMachineName: spacestationVirtualMachineName
   }
 }
@@ -108,10 +108,10 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
 // OUTPUT
 //////////
 
+output generateSshKeyScriptName string = generateSshKeyScriptName
 output groundstationAdminUsername string = adminUsername
 output groundstationHostName string = groundstation.outputs.hostName
 output keyvaultName string = keyvault.name
 output privateKeySecretName string = privateKeySecretName
 output spacestationAdminUsername string = adminUsername
 output spacestationHostName string = spacestation.outputs.hostName
-output sshKeyGenScriptName string = sshKeyGenScriptName
