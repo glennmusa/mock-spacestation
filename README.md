@@ -22,7 +22,7 @@ For context, here's a video summary of that experiment:
   
     The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the International Spacestation: 2 *megabits* per second.
 
-3. How and why **"Burst Down"** is valuable
+3. How and why **"Process at the Edge and Burst Down to the Cloud"** is valuable
 
     When the Azure Space team performed their genomics experiment, they used High Performance Compute on the spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
 
@@ -44,13 +44,11 @@ When you deploy with the Azure Portal, create yourself a new resource group:
 
 ![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
 
-And **make note of the Deployment Name that gets generated for you, we'll need that to get your SSH credentials**, it's usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456"
-
-Then when you're ready, deploy to Azure: 
+**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you, we'll need that to get your SSH credentials**. The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456"
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
 
-Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
+Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ### via Azure CLI
 
@@ -84,26 +82,31 @@ Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ## Connect to the VMs
 
-After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh), passing in the name of your resource group and the name of the deployment, to retrieve the SSH key and SSH commands to remote into the deployed VMs.
+After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh) and pass it the name of your resource group and the name of the deployment to retrieve the SSH key and SSH commands to remote into the deployed VMs.
+
+You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH commands to connect to your machines, if you're on a host that doesn't have those things, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
 If you've deployed from the Azure Portal, here's how to retrieve your deployment name:
 
 ![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
 
 ```plaintext
-# in the example above, we'd set:
+# in the example above, we'd set these values
 # resourceGroupName="mock-spacestation"
 # deploymentName="Microsoft.Template-20210820111307"
 
 ./getConnections.sh $resourceGroupName $deploymentName
-
-# should return something to the effect of:
-# INFO: Success! Private key written to ./mockSpacestationPrivateKey. Run these commands to SSH into your machines...
-# ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
-# ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
 ```
 
-You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH commands to connect to your machines, if you're on a host that doesn't have those things, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
+and getConnections.sh will place the private key on your machine and present you with your SSH commands to the Groundstation and Spacestation:
+
+```plaintext
+# your should get returned something to the effect of:
+
+INFO: Success! Private key written to ./mockSpacestationPrivateKey. Run these commands to SSH into your machines...
+ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
+ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
+```
 
 ## Synch the trials directory
 
@@ -172,4 +175,4 @@ What is the Visual Studio Code Remote - Containers extension? Get installation s
 
 ### Manually connecting to the Spacestation and Groundstation
 
-You can also manually get configured to SSH to the Spacestation and Groudstation: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
+You can also manually get configured to SSH into the Spacestation and Groudstation: [docs/manually-get-ssh-key.md](docs/manually-get-ssh-key.md)
