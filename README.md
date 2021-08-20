@@ -30,13 +30,13 @@ For context, here's a video summary of that experiment executed in August of 202
 
 To get started developing your workload for space:
 
-1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
+1. First, you'll **[deploy the Mock Spacestation template](#Deploy-the-Template)**
 
-2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synchronize-the-//trials-directory)** between the two with all the bandwidth and latency configured into the deployment
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your Mock Spacestation and Mock Groundstation and **[see the `/trials/` directory synched](#Synchronize-Directories)** between the two with all the bandwidth and latency configured into the deployment
 
-You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
+You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH key to connect to the Mock Spacestation and Mock Groundstation. If you're on a host that doesn't have those things, or you're not quite sure, you can pretty quickly and easily [use our developer environment](#Using-our-Development-Environment).
 
-## Deploy the template
+## Deploy the Template
 
 You have two options for deploying mock-spacestation:
 
@@ -112,7 +112,7 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
     ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
     ```
 
-## Synchronize the /trials directory
+## Synchronize Directories
 
 Once you're connected to the Spacestation, **any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the same directory on the Groundstation at a rate of 2 megabits per second every minute**.
 
@@ -159,7 +159,7 @@ This scheduled synchronization recreates the time delay and limited bandwidth en
 
 **Happy hacking!** Continue reading on for more information about how we built the Genomics experiment on Azure using the HPE SBC2 and the ISS, or how we setup our developer machines with containers to collaborate.
 
-## An example "Burst Down" workload
+## An Example "Burst Down" Workload
 
 The Azure Space team's genomics experiment is an example of a solution you could build with these mock-spacestation components:
 
@@ -192,7 +192,7 @@ After the Python workload completes, the compressed output folder is sent to the
 
 - Power BI retrieves the data containing clinical significance of the mutated genes from Blob Storage and displays it in an easily explorable format.
 
-## Using our development environment
+## Using our Development Environment
 
 Whether you're on Windows or Linux or otherwise, it's pretty handy to use a [container described in the repository](./devcontainer/Dockerfile) as your development environment.
 
