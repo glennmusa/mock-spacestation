@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.613.9944",
-      "templateHash": "9186687085589762225"
+      "templateHash": "14473341363148839004"
     }
   },
   "parameters": {
@@ -140,7 +140,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "7102218678887297922"
+              "templateHash": "8387825148628704231"
             }
           },
           "parameters": {
@@ -156,6 +156,13 @@
               "defaultValue": "azureuser",
               "metadata": {
                 "description": "The administrator username for your Virtual Machine"
+              }
+            },
+            "hostToSync": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The hostname of the machine to configure rsync to"
               }
             },
             "sshPrivateKey": {
@@ -355,6 +362,25 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('virtualMachineNetworkInterfaceName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('hostToSync')))]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2019-07-01",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSyncExtension')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                  "script": "IyEvYmluL2Jhc2gKCmVjaG8gIkhlbGxvLCBXb3JsZCEiID4+IC9ob21lL2F6dXJldXNlci9oZWxsb1dvcmxkLnR4dA=="
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
               ]
             }
           ],
@@ -394,6 +420,9 @@
           "location": {
             "value": "[parameters('spacestationLocation')]"
           },
+          "hostToSync": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'mockGroundstationVm'), '2019-10-01').outputs.hostName.value]"
+          },
           "sshPrivateKey": {
             "value": "[reference(resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))).outputs.keyinfo.privateKey]"
           },
@@ -411,7 +440,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.613.9944",
-              "templateHash": "7102218678887297922"
+              "templateHash": "8387825148628704231"
             }
           },
           "parameters": {
@@ -427,6 +456,13 @@
               "defaultValue": "azureuser",
               "metadata": {
                 "description": "The administrator username for your Virtual Machine"
+              }
+            },
+            "hostToSync": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "The hostname of the machine to configure rsync to"
               }
             },
             "sshPrivateKey": {
@@ -627,6 +663,25 @@
               "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('virtualMachineNetworkInterfaceName'))]"
               ]
+            },
+            {
+              "condition": "[not(empty(parameters('hostToSync')))]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2019-07-01",
+              "name": "[format('{0}/{1}', parameters('virtualMachineName'), 'configureSyncExtension')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {
+                  "script": "IyEvYmluL2Jhc2gKCmVjaG8gIkhlbGxvLCBXb3JsZCEiID4+IC9ob21lL2F6dXJldXNlci9oZWxsb1dvcmxkLnR4dA=="
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -646,6 +701,7 @@
         }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'mockGroundstationVm')]",
         "[resourceId('Microsoft.Resources/deploymentScripts', variables('sshKeyGenScriptName'))]"
       ]
     }

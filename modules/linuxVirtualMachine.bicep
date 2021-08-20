@@ -187,7 +187,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2020-06-01' = {
 resource configureSyncExtension 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if(!empty(hostToSync)) {
   parent: virtualMachine
   name: 'configureSyncExtension'
-  location: resourceGroup().location
+  location: location
   properties: {
     publisher: 'Microsoft.Azure.Extensions'
     type: 'CustomScript'
