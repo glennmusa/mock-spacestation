@@ -155,8 +155,6 @@ This scheduled synchronization recreates the time delay and limited bandwidth en
     total: matches=0  hash_hits=0  false_alarms=0 data=0
     ```
 
-**That's it!**
-
 **Happy hacking!** Continue reading on for more information about how we built the Genomics experiment on Azure using the HPE SBC2 and the ISS, or how we setup our developer machines with containers to collaborate.
 
 ## An Example "Burst Down" Workload
