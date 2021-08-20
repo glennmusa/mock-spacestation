@@ -40,35 +40,15 @@ You'll need the Azure CLI and the ability to invoke a BASH script to retrieve th
 
 You have two options for deploying mock-spacestation:
 
-1. A user-interface deployment [via the Azure Portal](#via-Azure-Portal)
+1. A command-line deployment [via the Azure CLI](#via-Azure-CLI)
 
-2. A command-line deployment [via the Azure CLI](#via-Azure-CLI)
-
-### via Azure Portal
-
-We can deploy the Mock Spacestation and Mock Groundstation to Azure from the portal with just a few clicks.
-
-When you deploy with the "Deploy to Azure" button below, create yourself a new resource group:
-
-![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
-
-**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you. You'll need those to get your SSH credentials**. 
-
-(The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456")
-
-![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
-
-1. Deploy mock-spacestation into a new resource group:
-
-    [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
-
-2. Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
+2. A user-interface deployment [via the Azure Portal](#via-Azure-Portal)
 
 ### via Azure CLI
 
 If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation:
 
-1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`
+1. First, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`:
 
     ```plaintext
     resourceGroupName="mock-spacestation"
@@ -93,6 +73,26 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
     ```
 
 4. Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
+
+### via Azure Portal
+
+We can deploy the Mock Spacestation and Mock Groundstation to Azure from the portal with just a few clicks.
+
+When you deploy with the "Deploy to Azure" button below, create yourself a new resource group:
+
+![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
+
+**Make note of the name of the Resource Group you create and the name of the Deployment that gets generated for you. You'll need those to get your SSH credentials**. 
+
+(The generated name is usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456")
+
+![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
+
+1. Deploy mock-spacestation into a new resource group:
+
+    [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
+
+2. Once that's complete, move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ## Connect to the VMs
 
