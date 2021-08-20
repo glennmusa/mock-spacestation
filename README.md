@@ -30,18 +30,9 @@ For context, here's a video summary of that experiment:
 
 To get started developing your workload for space:
 
-1. First, open this repo in **[our development environment](#Open-the-development-environment)**
+1. First , you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
 
-2. Then, you'll **[deploy the Mock Spacestation template](#Deploy-the-template)**
-
-3. Finally, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-VMs)** to your spacestation and groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
-
-## Open the development environment
-
-Whether you're on Windows or Linux or otherwise, it's pretty handy to use the [container described in this repository](./devcontainer/Dockerfile) as your development environment. It's what the team authored these scripts with and can best ensure compatibility, and we just think it's pretty cool to have our developer machines ready to go in seconds with all the tools we need.
-
-- _how to open this with GitHub Codespaces_
-- _how to open this with Visual Studio Code Remote - Containers extension_
+2. Then, you'll execute a small script to **[get the ssh commands to connect](#Connect-to-the-VMs)** to your spacestation and groundstation and **[see the `/trials/` directory synched](#Synch-the-trials-directory)** between the two with all the bandwidth and latency configured into the deployment.
 
 ## Deploy the template
 
@@ -53,13 +44,15 @@ When you deploy with the Azure Portal, create yourself a new resource group:
 
 _image creating from the portal_
 
-And make note of the Deployment Name that gets generated for you, we'll need that to get your SSH credentials and commands:
+And make note of the Deployment Name that gets generated for you, we'll need that to get your SSH credentials:
 
 _image indicating the deployment name_
 
-Then when you're ready, deploy to Azure:
+Then when you're ready, deploy to Azure: 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fglennmusa%2Fmock-spacestation%2Fmain%2FmockSpacestation.json)
+
+Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
 
 ### via Azure CLI
 
@@ -89,9 +82,11 @@ az deployment group create \
   --template-file ./mockSpacestation.json
 ```
 
-## Connect to VMs
+Once that's complete move on to [Connect to the VMs](#Connect-to-the-VMs).
 
-After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh), passing in the name of your resource group and the deployment name, to retrieve the commands to SSH into the deployed VMs.
+## Connect to the VMs
+
+After you've deployed the Mock Spacestation template, use [./getConnections.sh](./getConnections.sh), passing in the name of your resource group and the name of the deployment, to retrieve the SSH key and SSH commands to remote into the deployed VMs.
 
 If you've deployed from the Azure Portal, here's how to retrieve your deployment name:
 
@@ -105,6 +100,8 @@ _image that shows deployment name_
 # ssh -i mockSpacestationPrivateKey azureuser@mockgroundstation-abcd1234efgh5.eastus.cloudapp.azure.com
 # ssh -i mockSpacestationPrivateKey azureuser@mockspacestation-abcd1234efgh5.australiaeast.cloudapp.azure.com
 ```
+
+You'll need the Azure CLI and the ability to invoke a BASH script to retrieve the SSH commands to connect to your machines, if you're on a host that doesn't have those things, you can pretty quickly and easily [use our developer environment](#Using-our-development-environment).
 
 ## Synch the trials directory
 
@@ -123,6 +120,7 @@ The Azure Space team's genomics experiment is an example of a solution you could
 More technical information on the experiment can be found at this blog post: [https://azure.microsoft.com/en-us/blog/genomics-testing-on-the-iss-with-hpe-spaceborne-computer2-and-azure/](https://azure.microsoft.com/en-us/blog/genomics-testing-on-the-iss-with-hpe-spaceborne-computer2-and-azure/)
 
 ### On the Spacestation
+
 - A Linux container hosts a Python workload, which is packaged with data representing mutated DNA fragments and wild-type (meaning normal or non-mutated) human DNA segments. There are 80 lines of Python code, with a 30-line bash script to execute the experiment.
 
 - The Python workload generates a configurable amount of DNA sequences (mimicking gene sequencer reads, about 70 nucleotides long) from the mutated DNA fragment.
@@ -133,6 +131,7 @@ More technical information on the experiment can be found at this blog post: [ht
 After the Python workload completes, the compressed output folder is sent to the HPE ground station on Earth via rsync.
 
 ### On Earth
+
 - The HPE ground station uploads the data it receives to Azure, writing it to Azure Blob Storage through azcopy.
 
 - An event-driven, serverless function written in Python and hosted in Azure Functions monitors Blob Storage, retrieving newly received data and sending it to the Microsoft Genomics service via its REST API.
@@ -144,3 +143,19 @@ After the Python workload completes, the compressed output folder is sent to the
 - A second serverless function hosted in Azure Functions retrieves the VCF records, using the determined location of each mutation to query the dbSNP database hosted by the National Institute of Health—as needed to determine the clinical significance of the mutation—and writes that information to a JSON file in Blob Storage.
 
 - Power BI retrieves the data containing clinical significance of the mutated genes from Blob Storage and displays it in an easily explorable format.
+
+## Using our development environment
+
+Whether you're on Windows or Linux or otherwise, it's pretty handy to use a [container described in the repository](./devcontainer/Dockerfile) as your development environment. 
+
+Our environment comes with all the tools we used to author this repo so it's where we can best ensure compatibility (plus, we just think it's pretty cool to have our developer machines ready to go with all the tools we need in seconds).
+
+It's really easy to get started with GitHub Codespaces and/or Visual Studio Code.
+
+### GitHub Codespaces
+
+- _how to open this with GitHub Codespaces_
+
+### Visual Studio Code Remote - Containers
+
+- _how to open this with Visual Studio Code Remote - Containers extension_
