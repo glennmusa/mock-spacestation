@@ -119,3 +119,4 @@ output keyvaultName string = keyvault.name
 output privateKeySecretName string = privateKeySecretName
 output spacestationAdminUsername string = adminUsername
 output spacestationHostName string = spacestation.outputs.hostName
+output sshKeyGenScriptName string = sshKeyGenScriptName

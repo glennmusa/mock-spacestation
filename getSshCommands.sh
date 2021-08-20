@@ -53,9 +53,10 @@ outputs=($(az deployment group show \
       properties.outputs.keyvaultName.value, \
       properties.outputs.privateKeySecretName.value, \
       properties.outputs.spacestationAdminUsername.value, \
-      properties.outputs.spacestationHostName.value \
+      properties.outputs.spacestationHostName.value, \
+      properties.outputs.sshKeyGenScriptName.value \
     ]" \
-  --output tsv))
+  --output "tsv"))
 
 # assign values from outputs
 groundstationAdminUsername=${outputs[0]}
@@ -64,6 +65,7 @@ keyvaultName=${outputs[2]}
 privateKeySecretName=${outputs[3]}
 spacestationAdminUsername=${outputs[4]}
 spacestationHostName=${outputs[5]}
+sshKeyGenScriptName=${outputs[6]}
 
 # add the secret permissions for the user
 info_log "Adding secret policies for current user $userObjectId"
@@ -81,12 +83,21 @@ az keyvault secret show \
   --vault-name "$keyvaultName" \
   --name "$privateKeySecretName" \
   --query "value" \
-  --output tsv >> "$privateKeyFileName"
+  --output "tsv" >> "$privateKeyFileName"
 
 # set the perms on the private key
 info_log "Setting permissions on $privateKeySecretName to allow SSH"
 chmod 600 "$privateKeyFileName"
 
+# delete the SSH keygen script now that we have the private key
+info_log "Cleaning up remote SSH key generation script $sshKeyGenScriptName"
+az deployment-scripts delete \
+  --resource-group "$resourceGroupName" \
+  --name "$sshKeyGenScriptName" \
+  --yes \
+  --only-show-errors \
+  --output "none"
+  
 # echo out the SSH command
 info_log "Success! Private key written to ./$privateKeyFileName. Run these commands to SSH into your machines"
 echo "ssh -i $privateKeyFileName $groundstationAdminUsername@$groundstationHostName"
