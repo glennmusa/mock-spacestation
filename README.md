@@ -36,9 +36,7 @@ To get started developing your workload for space:
 
 ## Open the development environment
 
-(document the steps to open in):
-
-Whether you're on Windows or Linux, it's pretty handy to use the [container described in this repository](./devcontainer/Dockerfile) as your development environment. It's what the team authored these scripts with and can best ensure compatibility.
+Whether you're on Windows or Linux or otherwise, it's pretty handy to use the [container described in this repository](./devcontainer/Dockerfile) as your development environment. It's what the team authored these scripts with and can best ensure compatibility.
 
 - _how to open with GitHub Codespaces_
 - _how to open with Visual Studio Code Remote - Containers extension_
@@ -104,7 +102,7 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 
 ## Synch the trials directory
 
-Once you're on the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the Groundstation at 2 megabits per second every 5 minutes as seen in [scripts/configureSource.sh](scripts/configureSource.sh):
+Once you're on the Spacestation, any files or directories that make their way to the `/home/azureuser/trials` directory will be synched to the Groundstation at 2 megabits per second every 5 minutes:
 
 _an image showing the spacestation directory_
 
