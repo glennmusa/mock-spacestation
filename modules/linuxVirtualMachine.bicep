@@ -26,6 +26,10 @@ param location string = resourceGroup().location
 @description('The administrator username for your Virtual Machine')
 param adminUsername string = 'azureuser'
 
+@description('The private key for SSH access to other Virtual Machines in this deployment')
+@secure()
+param sshPrivateKey string
+
 @description('The public key for SSH access to this Virtual Machine')
 @secure()
 param sshPublicKey string
