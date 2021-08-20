@@ -61,8 +61,8 @@ If you're comfortable with the command line, the Azure CLI provides the `deploym
 First, set yourself some environment variables to make things easier, `resourceGroupName` and `deploymentName`
 
 ```plaintext
-resourceGroupName="myMockSpacestation"
-deploymentName="mockSpaceStationDeploy"
+resourceGroupName="mock-spacestation"
+deploymentName="mock-spacestation-deploy"
 ```
 
 Then, create a resource group with `az group create`:
