@@ -42,11 +42,9 @@ We can deploy the Mock Spacestation and Mock Groundstation to Azure from the por
 
 When you deploy with the Azure Portal, create yourself a new resource group:
 
-_image creating from the portal_
+![Deploying the mock-spacestation template from the Azure Portal](docs/images/spacestation_template_deployment_smaller.gif)
 
-And make note of the Deployment Name that gets generated for you, we'll need that to get your SSH credentials:
-
-_image indicating the deployment name_
+And **make note of the Deployment Name that gets generated for you, we'll need that to get your SSH credentials**, it's usually something similar to "Microsoft.Template-${timestamp}" like "Microsoft.Template-20210820123456"
 
 Then when you're ready, deploy to Azure: 
 
@@ -90,7 +88,7 @@ After you've deployed the Mock Spacestation template, use [./getConnections.sh](
 
 If you've deployed from the Azure Portal, here's how to retrieve your deployment name:
 
-_image that shows deployment name_
+![The Deployment UI in the Azure Portal showing the Deployment Name](docs/images/portal-deployment-name-smaller.png)
 
 ```plaintext
 ./getConnections.sh $resourceGroupName $deploymentName
