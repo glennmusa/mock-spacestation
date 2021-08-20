@@ -1,37 +1,47 @@
 //////////
+// CONSTS
+//////////
+
+// Administrator Values
+var adminUsername = 'azureuser'
+
+// SSH Key Values
+var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
+var keyvaultTenantId = subscription().tenantId
+var privateKeySecretName = 'sshPrivateKey'
+var publicKeySecretName = 'sshPublicKey'
+
+// SSH Key Generation Script Values
+var sshKeyGenScriptName = 'sshKeyGenScript'
+var sshKeyGenScript = loadTextContent('./scripts/sshKeyGen.sh')
+
+//////////
 // PARAMS
 //////////
 
-// Administrator Parameters
-var adminUsername = 'azureuser'
-
 // Groundstation Parameters
 @description('The name of the Mock Groundstation Virtual Machine')
-param groundstationVmName string = 'mockGroundstation'
+param groundstationVirtualMachineName string = 'mockGroundstation'
 @description('The region to deploy Mock Groundstation resources into')
 param groundstationLocation string = 'eastus'
 
 // Spacestation Parameters
+@description('The name of the Mock Spacestation Virtual Machine')
+param spacestationVirtualMachineName string = 'mockSpacestation'
 @description('The region to deploy Mock Spacestation resources into')
 param spacestationLocation string = 'australiaeast'
-@description('The name of the Mock Spacestation Virtual Machine')
-param spacestationVmName string = 'mockSpacestation'
-
-// SSH Key Parameters
-var keyvaultName = toLower('mockisskv${uniqueString(resourceGroup().id)}')
-var keyvaultTenantId = subscription().tenantId
 
 //////////
 // MAIN
 //////////
 
-resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyvaultName
   location: resourceGroup().location
   properties: {
+    accessPolicies: []
     enabledForDeployment: true
     enabledForTemplateDeployment: true
-    enableRbacAuthorization: true
     networkAcls: {
       defaultAction: 'Allow'
       bypass: 'AzureServices'
@@ -44,10 +54,30 @@ resource keyvault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
   }
 }
 
-module sshKey 'modules/sshKey.bicep' = {
-  name: 'sshKey'
-  params: {
-    keyvaultName: keyvault.name
+resource sshKeyGenerationScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: sshKeyGenScriptName
+  location: resourceGroup().location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.25.0'
+    cleanupPreference: 'OnSuccess'
+    scriptContent: sshKeyGenScript
+    retentionInterval: 'P1D' // retain script for 1 day
+    timeout: 'PT30M' // timeout after 30 minutes
+  }
+}
+
+resource publicKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyvault.name}/${publicKeySecretName}'
+  properties: {
+    value: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+  }
+}
+
+resource privateKeySecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyvault.name}/${privateKeySecretName}'
+  properties: {
+    value: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
   }
 }
 
@@ -55,9 +85,10 @@ module groundstation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockGroundstationVm'
   params: {
     adminUsername: adminUsername
-    sshPublicKey: sshKey.outputs.publicKey
     location: groundstationLocation
-    vmName: groundstationVmName
+    sshPrivateKey: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
+    sshPublicKey: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+    virtualMachineName: groundstationVirtualMachineName
   }
 }
 
@@ -65,18 +96,21 @@ module spacestation 'modules/linuxVirtualMachine.bicep' = {
   name: 'mockSpacestationVm'
   params: {
     adminUsername: adminUsername
-    sshPublicKey: sshKey.outputs.publicKey
     location: spacestationLocation
-    vmName: spacestationVmName
+    sshPrivateKey: sshKeyGenerationScript.properties.outputs.keyinfo.privateKey
+    sshPublicKey: sshKeyGenerationScript.properties.outputs.keyinfo.publicKey
+    virtualMachineName: spacestationVirtualMachineName
   }
 }
 
-output keyvaultResourceId string = keyvault.id
-output keyvaultName string = keyvault.name
-output privateKeySecretName string = sshKey.outputs.privateKeySecretName
+//////////
+// OUTPUT
+//////////
 
 output groundstationAdminUsername string = adminUsername
 output groundstationHostName string = groundstation.outputs.hostName
-
+output keyvaultName string = keyvault.name
+output privateKeySecretName string = privateKeySecretName
 output spacestationAdminUsername string = adminUsername
 output spacestationHostName string = spacestation.outputs.hostName
+output sshKeyGenScriptName string = sshKeyGenScriptName

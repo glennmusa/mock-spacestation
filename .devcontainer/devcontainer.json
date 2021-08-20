@@ -9,9 +9,12 @@
 		
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
+		"bierner.markdown-preview-github-styles",
+		"davidanson.vscode-markdownlint",
 		"ms-vscode.azurecli",
 		"ms-dotnettools.vscode-dotnet-runtime",
-		"ms-azuretools.vscode-bicep"
+		"ms-azuretools.vscode-bicep",
+		"timonwong.shellcheck"
 	],
 	
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
