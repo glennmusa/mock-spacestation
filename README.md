@@ -22,7 +22,7 @@ For context, here's a video summary of that experiment:
   
     The Mock Spacestation is configured out of the box to synchronize with the Mock Groundstation at the actual bandwidth cap when communicating with the International Spacestation: 2 *megabits* per second.
 
-3. How and why **"Process at the Edge and Burst Down to the Cloud"** is valuable
+3. **Processing at the Edge and bursting down to the cloud**
 
     When the Azure Space team performed their genomics experiment, they used High Performance Compute on the International Spacestation with the HPE Spaceborne Computer 2 to perform intensive work at the edge to determine what is important enough to send back to Earth, then transmitted just those important bits through the narrow 2 Mbps pipe, then scaled up analysis and compute on a global scale with Azure. 
 
