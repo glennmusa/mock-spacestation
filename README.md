@@ -48,7 +48,14 @@ You have two options for deploying mock-spacestation:
 
 If you're comfortable with the command line, the Azure CLI provides the `deployment` command group to deploy the Mock Spacestation and Mock Groundstation.
 
-1. First, ensure you have a valid login and subscription context via 'az account show'. If not logged in, Use 'az login' to connect and 'az account set --subscription `<YourSubName>` ' to select the desired subscription for deployment.
+1. First, ensure you're logged into the Azure CLI and have set the subscription you want to deploy into: 
+
+    ```plaintext
+    az login
+    az account set --subscription <subscription name or ID> 
+    ```
+
+    Here's a link to the documentation if you need more help logging in: [https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az_login](https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az_login)
 
 2. Next, set yourself some environment variables to make things easier `resourceGroupName` and `deploymentName`:
 
